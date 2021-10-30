@@ -16,14 +16,27 @@ fn main() {
 					and currently only simulates:\n\
 					Sea Altitude\n\
 					Launch at mach 1");
+	println!("enable debug mode? y/n");
+
+	let mut debug = false;
+
+	let mut line = "".to_owned();
+	io::stdin()
+		.read_line(&mut line)
+		.expect("failed to read from stdin");
+
+	match line.trim() {
+		"y" => {debug = true}
+		_ => {}
+	}
 
 	loop {
 		let missiles = Missile::new_from_generated(Some("./all.json"), None);
-		run_calc(missiles)
+		run_calc(missiles, debug)
 	}
 }
 
-fn run_calc(missiles: Vec<Missile>) {
+fn run_calc(missiles: Vec<Missile>, debug: bool) {
 	println!("{}", "Enter which which missile to test (all lowercase)");
 
 	let mut line = "".to_owned();
@@ -36,6 +49,6 @@ fn run_calc(missiles: Vec<Missile>) {
 	}else {
 		let missile = Missile::select_by_name(&missiles, line.trim()).unwrap();
 
-		generate(missile, LaunchParameters::new_from_default_hor(), 0.01, false);
+		generate(missile, LaunchParameters::new_from_default_hor(), 0.1, debug);
 	}
 }
