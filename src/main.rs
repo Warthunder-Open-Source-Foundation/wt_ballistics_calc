@@ -49,6 +49,6 @@ fn run_calc(missiles: Vec<Missile>, debug: bool) {
 	}else {
 		let missile = Missile::select_by_name(&missiles, line.trim()).unwrap();
 
-		generate(missile, LaunchParameters::new_from_default_hor(), 0.1, debug);
+		generate(missile, LaunchParameters::new_from_parameters(false, 350.0, 1000.0, 350.0, 0), 0.1, debug);
 	}
 }

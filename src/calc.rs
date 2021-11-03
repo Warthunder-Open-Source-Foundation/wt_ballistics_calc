@@ -44,10 +44,10 @@ pub fn generate(missile: Missile, launch_parameters: LaunchParameters, timestep:
 		velocity += a * timestep;
 		distance += velocity * timestep;
 
-		// if target_distance < distance {
-		// 	println!("Splash at {}m! The target is {}m from the launch aircraft", target_distance, target_distance - launch_distance);
-		// 	break;
-		// }
+		if target_distance != 0.0 && target_distance < distance {
+			println!("Splash at {}m! The target is {}m from the launch aircraft", target_distance, target_distance - launch_distance);
+			break;
+		}
 
 		if velocity > max_v {
 			max_v = velocity;
