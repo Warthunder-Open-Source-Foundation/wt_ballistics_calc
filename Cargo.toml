@@ -7,3 +7,4 @@ edition = "2018"
 
 [dependencies]
 pad = "0.1.6"
+wt_missile_calc = { path = "../wt_missile_calc" }

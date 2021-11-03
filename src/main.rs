@@ -1,55 +1,59 @@
-use std::collections::HashMap;
-use std::f64::consts::{E, PI};
+use std::io;
+use std::thread::sleep;
+use std::time::Duration;
+use wt_missile_calc_lib::missiles::Missile;
 
-use pad::PadStr;
+use calc::generate;
 
-const MASS: f64 = 44.0;
+use crate::launch_parameters::LaunchParameters;
 
-const MASS_END: f64 = 34.0;
-
-const GRAVITY: f64 = 9.81;
-
-const DIAM: f64 = 0.21;
-
-const CXK: f64 = 3.1;
-
-const RHO_0: f64 = 1.225;
-const RHO_500: f64 = 1.167;
-const RHO_1000: f64 = 1.11;
-const RHO_2000: f64 = 1.0;
-const RHO_4000: f64 = 0.819;
-const RHO_6000: f64 = 0.66;
-const RHO_8000: f64 = 0.525;
-const RHO_10000: f64 = 0.413;
-
-const TIMEFIRE0: f64 = 3.0;
-
-const THRUST0: f64 = 95000.0;
-
-const ENDSPEED: f64 = 1000.0;
-
-const TIMESTEP: f64 = 0.1;
-
-const SIMTIME: f64 = 21.0;
+mod launch_parameters;
+mod calc;
 
 fn main() {
-	let gravity = GRAVITY * 0.0;
+	println!("{}", "Welcome to FlareFlo's missile-range calculator!");
+	println!("{}", "Please note that this tool is very WIP,\n\
+					and currently only simulates:\n\
+					Sea Altitude\n\
+					Launch at mach 1");
+	println!("enable debug mode? y/n");
 
+	let mut debug = false;
 	let mut a: f64;
 	let area = PI * (DIAM / 2.0).powi(2);
 
 	let mut drag_force: f64;
+	let mut line = "".to_owned();
+	io::stdin()
+		.read_line(&mut line)
+		.expect("failed to read from stdin");
 
+	match line.trim() {
+		"y" => {debug = true}
+		_ => {}
+	}
 	let mut velocity: f64 = 367.0;
 
-	let mut distance: f64 = 0.0;
+	loop {
+		let missiles = Missile::new_from_generated(Some("./all.json"), None);
+		run_calc(missiles, debug)
+	}
+}
 
-	let launch_velocity = velocity;
-	let mut launch_distance = 0.0;
+fn run_calc(missiles: Vec<Missile>, debug: bool) {
+	println!("{}", "Enter which which missile to test (all lowercase)");
 
+	let mut line = "".to_owned();
+	io::stdin()
+		.read_line(&mut line)
+		.expect("failed to read from stdin");
 	let target_velocity = 343.0;
 	let mut target_distance = 2000.0;
 
+	if let None = Missile::select_by_name(&missiles, line.trim()) {
+		println!("{}", "Cannot find missile");
+	}else {
+		let missile = Missile::select_by_name(&missiles, line.trim()).unwrap();
 	let mut max_v = 0.0;
 	let mut closest = f64::MAX;
 
@@ -93,31 +97,8 @@ fn main() {
 				 velocity.round().to_string().pad_to_width(3),
 				 drag_force.round().to_string().pad_to_width(4)
 		);
+		generate(missile, LaunchParameters::new_from_default_hor(), 0.1, debug);
 	}
 	println!("max v: {}", max_v.round());
 	println!("delta target-missile: {}m", closest.round());
-}
-
-
-fn old_formula() {
-	let k = 0.5 * RHO_0 * CXK * PI * (DIAM / 2.0).powi(2);
-
-	let mg = MASS * GRAVITY;
-
-	let q = ((THRUST0 - mg) / k).sqrt();
-
-	let x = (2.0 * k * q) / MASS;
-
-	let v = q * ((1.0 - E.powf(-x - TIMEFIRE0)) / (1.0 + E.powf(-x * TIMEFIRE0)));
-
-	let tmg = THRUST0 - mg;
-
-	let kv2 = k * v.powi(2);
-
-	let y1 = -MASS / 2.0 * k * ((tmg - kv2) / tmg).ln();
-
-	let yc = (MASS / 2.0 * k) * ((mg + kv2) / mg).ln();
-
-	let yd = y1 + yc;
-	eprintln!("yd = {:?}", yd);
 }
