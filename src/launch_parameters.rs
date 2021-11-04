@@ -1,4 +1,5 @@
-pub struct LaunchParameters {
+#[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
+pub struct LaunchParameter {
 	pub use_gravity: bool,
 	pub start_velocity: f64,
 	pub distance_to_target: f64,
@@ -6,7 +7,7 @@ pub struct LaunchParameters {
 	pub altitude: u32,
 }
 
-impl LaunchParameters {
+impl LaunchParameter {
 	pub fn new_from_parameters(use_gravity: bool, start_velocity: f64, distance_to_target: f64, target_speed: f64, altitude: u32) -> Self {
 		Self {
 			use_gravity,

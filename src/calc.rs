@@ -4,12 +4,12 @@ use pad::PadStr;
 
 use wt_missile_calc_lib::missiles::Missile;
 
-use crate::launch_parameters::LaunchParameters;
+use crate::launch_parameters::LaunchParameter;
 use crate::rho::altitude_to_rho;
 
 const GRAVITY: f64 = 9.81;
 
-pub fn generate(missile: &Missile, launch_parameters: &LaunchParameters, timestep: f64, debug: bool) {
+pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep: f64, debug: bool) {
 	let start = Instant::now();
 
 	// State parameters
@@ -76,7 +76,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameters, timeste
 		}
 
 		if target_distance != 0.0 && target_distance < distance {
-			println!("Splash at {}m! The target is {}m from the launch aircraft", target_distance, target_distance - launch_distance);
+			println!("Splash at {}m! The target is {}m from the launch aircraft after {}s of flight time", target_distance, target_distance - launch_distance, i as f64 * timestep);
 			break;
 		}
 	}

@@ -106,6 +106,8 @@ name = "wt_ballistics_calc"
 version = "0.1.0"
 dependencies = [
  "pad",
+ "serde",
+ "serde_json",
  "wt_missile_calc",
 ]
 
