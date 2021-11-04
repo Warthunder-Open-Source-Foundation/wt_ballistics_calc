@@ -4,9 +4,9 @@ use std::time::Instant;
 use wt_missile_calc_lib::missiles::Missile;
 
 use crate::launch_parameters::LaunchParameters;
+use crate::rho::altitude_to_rho;
 
 const GRAVITY: f64 = 9.81;
-const RHO: [f64; 1] = [1.22];
 
 pub fn generate(missile: &Missile, launch_parameters: &LaunchParameters, timestep: f64, debug: bool) {
 	let start = Instant::now();
@@ -16,6 +16,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameters, timeste
 	let mut a: f64;
 	let mut velocity: f64 = launch_parameters.start_velocity;
 	let mut distance: f64 = 0.0;
+	let mut altitude: f64 = 4650.0;
 
 	#[allow(unused_variables)] // Clippy being retarded again
 	let mut launch_distance: f64 = 0.0;
@@ -38,7 +39,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameters, timeste
 	// Save allow thanks to abs() and never overflowing value thanks to division beforehand
 	#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 	for i in 0..((missile.timelife / timestep).round().abs() as u32) {
-		drag_force = 0.5 * RHO[0] * velocity.powi(2) * missile.cxk * area;
+		drag_force = 0.5 * altitude_to_rho(altitude.round() as u32) * velocity.powi(2) * missile.cxk * area;
 		if (f64::from(i) * timestep) < missile.timefire0 {
 			a = ((missile.force0 - drag_force) / missile.mass) - gravity;
 		} else {

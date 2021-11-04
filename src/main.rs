@@ -7,6 +7,7 @@ use crate::launch_parameters::LaunchParameters;
 
 mod launch_parameters;
 mod calc;
+mod rho;
 
 fn main() {
 	println!("Welcome to FlareFlo's missile-range calculator!");
