@@ -24,7 +24,7 @@ fn main() {
 		_ => {false}
 	};
 
-	let mut launch_parameters = LaunchParameter::new_from_parameters(false, 350.0, 1000.0, 350.0, 0);
+	let mut launch_parameters = LaunchParameter::new_from_parameters(false, 343.0, 0.0, 0.0, 0);
 
 	let missiles = Missile::new_from_generated(Some("./all.json"), None);
 	loop {

@@ -1,7 +1,7 @@
 use std::f64::consts::PI;
 use std::time::Instant;
-use pad::PadStr;
 
+use pad::PadStr;
 use wt_missile_calc_lib::missiles::Missile;
 
 use crate::launch_parameters::LaunchParameter;
@@ -42,8 +42,12 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	for i in 0..((missile.timelife / timestep).round().abs() as u32) {
 		let rho = altitude_to_rho(altitude.round() as u32);
 		drag_force = 0.5 * rho * velocity.powi(2) * missile.cxk * area;
+
+
 		if (f64::from(i) * timestep) < missile.timefire0 {
 			a = ((missile.force0 - drag_force) / missile.mass) - gravity;
+		} else if missile.timefire1 != 0.0 && (f64::from(i) * timestep) < missile.timefire1 {
+			a = ((missile.force1 - drag_force) / missile.mass) - gravity;
 		} else {
 			a = (-drag_force / missile.mass_end) - gravity;
 		}
