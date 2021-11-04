@@ -44,12 +44,17 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		drag_force = 0.5 * rho * velocity.powi(2) * missile.cxk * area;
 
 
+		let mut engine_stage = "0";
+
 		if (f64::from(i) * timestep) < missile.timefire0 {
 			a = ((missile.force0 - drag_force) / missile.mass) - gravity;
+			engine_stage = "0";
 		} else if missile.timefire1 != 0.0 && (f64::from(i) * timestep) < missile.timefire1 {
 			a = ((missile.force1 - drag_force) / missile.mass) - gravity;
+			engine_stage = "1";
 		} else {
 			a = (-drag_force / missile.mass_end) - gravity;
+			engine_stage = "-";
 		}
 
 		target_distance += target_velocity * timestep;
@@ -69,13 +74,15 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		}
 
 		if debug {
-			println!("m: {} t: {} a: {} v: {} d: {} rho: {}",
+			println!("ts(s): {} D(m): {} Dt(m): {} a(m/s²): {} v(m/s): {} d(N): {} rho: {} s: {}",
+					 format!("{:.1}", (i as f64 * timestep)).to_string().pad_to_width(4),
 					 distance.round().to_string().pad_to_width(4),
 					 target_distance.round().to_string().pad_to_width(4),
 					 a.round().to_string().pad_to_width(3),
 					 velocity.round().to_string().pad_to_width(4),
 					 drag_force.round().to_string().pad_to_width(4),
 					 rho.to_string().pad_to_width(6),
+					engine_stage.pad_to_width(1),
 			);
 		}
 
