@@ -34,7 +34,7 @@ fn main() {
 
 #[allow(clippy::ptr_arg)]
 fn run_calc(missiles: &Vec<Missile>, launch_parameters: LaunchParameter, debug: bool) {
-	println!("Enter which which missile to test (all lowercase) or leave empty to configure launch selection");
+	println!("Enter which missile to test (all lowercase) or leave empty to configure launch selection");
 
 	let mut line = "".to_owned();
 	io::stdin()
