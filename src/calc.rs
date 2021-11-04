@@ -1,5 +1,6 @@
 use std::f64::consts::PI;
 use std::time::Instant;
+use pad::PadStr;
 
 use wt_missile_calc_lib::missiles::Missile;
 
@@ -19,12 +20,12 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameters, timeste
 	let mut altitude: f64 = 4650.0;
 
 	#[allow(unused_variables)] // Clippy being retarded again
-	let mut launch_distance: f64 = 0.0;
+		let mut launch_distance: f64 = 0.0;
 
 	// Constants for calculations
 	// javascript moment
 	#[allow(clippy::cast_precision_loss)] // save cast thanks to gravity being normal
-	let gravity = GRAVITY * launch_parameters.use_gravity as u64 as f64;
+		let gravity = GRAVITY * launch_parameters.use_gravity as u64 as f64;
 	let area = PI * (missile.caliber / 2.0).powi(2);
 	let launch_velocity = velocity;
 
@@ -39,7 +40,8 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameters, timeste
 	// Save allow thanks to abs() and never overflowing value thanks to division beforehand
 	#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 	for i in 0..((missile.timelife / timestep).round().abs() as u32) {
-		drag_force = 0.5 * altitude_to_rho(altitude.round() as u32) * velocity.powi(2) * missile.cxk * area;
+		let rho = altitude_to_rho(altitude.round() as u32);
+		drag_force = 0.5 * rho * velocity.powi(2) * missile.cxk * area;
 		if (f64::from(i) * timestep) < missile.timefire0 {
 			a = ((missile.force0 - drag_force) / missile.mass) - gravity;
 		} else {
@@ -53,10 +55,6 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameters, timeste
 		velocity += a * timestep;
 		distance += velocity * timestep;
 
-		if target_distance != 0.0 && target_distance < distance {
-			println!("Splash at {}m! The target is {}m from the launch aircraft", target_distance, target_distance - launch_distance);
-			break;
-		}
 
 		if velocity > max_v {
 			max_v = velocity;
@@ -67,17 +65,29 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameters, timeste
 		}
 
 		if debug {
-			println!("m: {} t: {} a: {} v: {} d: {}", distance, target_distance, a, velocity, drag_force);
+			println!("m: {} t: {} a: {} v: {} d: {} rho: {}",
+					 distance.round().to_string().pad_to_width(4),
+					 target_distance.round().to_string().pad_to_width(4),
+					 a.round().to_string().pad_to_width(3),
+					 velocity.round().to_string().pad_to_width(4),
+					 drag_force.round().to_string().pad_to_width(4),
+					 rho.to_string().pad_to_width(6),
+			);
+		}
+
+		if target_distance != 0.0 && target_distance < distance {
+			println!("Splash at {}m! The target is {}m from the launch aircraft", target_distance, target_distance - launch_distance);
+			break;
 		}
 	}
-	println!("max velocity: {}", max_v);
-	println!("max distance reached: {}", distance);
+	println!("max velocity: {}m/s", max_v.round());
+	println!("max distance reached: {}m", distance.round());
 
 	if debug {
 		println!("Simulation took: {:?}", start.elapsed());
 	}
 
 	if launch_parameters.target_speed != 0.0 {
-		println!("min missile - target: {}m", closest);
+		println!("min missile - target: {}m", closest.round());
 	}
 }

@@ -29,7 +29,6 @@ pub fn altitude_to_rho(altitude: u32) -> f64 {
 
 	for key in map.keys() {
 		if altitude <= *key {
-			println!("Matched key at: {}", key);
 		return *map.get(key).unwrap();
 		}
 	}
