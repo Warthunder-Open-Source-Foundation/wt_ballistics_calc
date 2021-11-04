@@ -13,7 +13,7 @@
     "dragcx": 0.015,
     "timelife": 100.0,
     "endspeed": 0.0,
-    "tnt": 8.1,
+    "exp_mass": 8.1,
     "pfuse": true,
     "loadfactormax": 15.0,
     "reqaccelmax": 15.0,
@@ -30,7 +30,8 @@
     "minangletosun": 5.0,
     "warmuptime": 4.0,
     "worktime": 15.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 615.7622739018088
   },
   {
     "name": "./index/missiles/fr_r_530_matra_radar.blkx",
@@ -46,7 +47,7 @@
     "dragcx": 0.015,
     "timelife": 25.0,
     "endspeed": 0.0,
-    "tnt": 8.1,
+    "exp_mass": 8.1,
     "pfuse": true,
     "loadfactormax": 15.0,
     "reqaccelmax": 15.0,
@@ -63,7 +64,8 @@
     "minangletosun": 0.0,
     "warmuptime": 2.0,
     "worktime": 15.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 615.7622739018088
   },
   {
     "name": "./index/missiles/fr_r_550_magic.blkx",
@@ -79,7 +81,7 @@
     "dragcx": 0.015,
     "timelife": 25.0,
     "endspeed": 0.0,
-    "tnt": 6.0,
+    "exp_mass": 6.0,
     "pfuse": true,
     "loadfactormax": 30.0,
     "reqaccelmax": 30.0,
@@ -96,7 +98,8 @@
     "minangletosun": 10.0,
     "warmuptime": 5.0,
     "worktime": 10.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 606.7415730337078
   },
   {
     "name": "./index/missiles/su_9m39.blkx",
@@ -112,7 +115,7 @@
     "dragcx": 0.018,
     "timelife": 14.0,
     "endspeed": 1000.0,
-    "tnt": 0.4,
+    "exp_mass": 0.4,
     "pfuse": true,
     "loadfactormax": 10.0,
     "reqaccelmax": 10.0,
@@ -129,7 +132,8 @@
     "minangletosun": 5.0,
     "warmuptime": 5.0,
     "worktime": 60.0,
-    "cageable": false
+    "cageable": false,
+    "deltav": 868.0188679245282
   },
   {
     "name": "./index/missiles/su_pl2.blkx",
@@ -145,7 +149,7 @@
     "dragcx": 0.018,
     "timelife": 21.0,
     "endspeed": 800.0,
-    "tnt": 5.5,
+    "exp_mass": 5.5,
     "pfuse": true,
     "loadfactormax": 10.0,
     "reqaccelmax": 11.0,
@@ -162,7 +166,8 @@
     "minangletosun": 20.0,
     "warmuptime": 6.0,
     "worktime": 15.0,
-    "cageable": false
+    "cageable": false,
+    "deltav": 505.9707835325366
   },
   {
     "name": "./index/missiles/su_pl5b.blkx",
@@ -178,7 +183,7 @@
     "dragcx": 0.018,
     "timelife": 40.0,
     "endspeed": 1000.0,
-    "tnt": 4.76,
+    "exp_mass": 4.76,
     "pfuse": true,
     "loadfactormax": 20.0,
     "reqaccelmax": 20.0,
@@ -195,7 +200,8 @@
     "minangletosun": 20.0,
     "warmuptime": 4.0,
     "worktime": 15.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 857.1428571428571
   },
   {
     "name": "./index/missiles/su_r_13m.blkx",
@@ -211,7 +217,7 @@
     "dragcx": 0.018,
     "timelife": 54.0,
     "endspeed": 1000.0,
-    "tnt": 5.5,
+    "exp_mass": 5.5,
     "pfuse": true,
     "loadfactormax": 15.0,
     "reqaccelmax": 15.0,
@@ -228,7 +234,8 @@
     "minangletosun": 10.0,
     "warmuptime": 4.0,
     "worktime": 15.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 592.9304446978335
   },
   {
     "name": "./index/missiles/su_r_23r.blkx",
@@ -244,7 +251,7 @@
     "dragcx": 0.018,
     "timelife": 35.0,
     "endspeed": 1000.0,
-    "tnt": 13.0,
+    "exp_mass": 13.0,
     "pfuse": true,
     "loadfactormax": 20.0,
     "reqaccelmax": 20.0,
@@ -261,7 +268,8 @@
     "minangletosun": 0.0,
     "warmuptime": 1.0,
     "worktime": 100.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 497.7578475336323
   },
   {
     "name": "./index/missiles/su_r_23t.blkx",
@@ -277,7 +285,7 @@
     "dragcx": 0.018,
     "timelife": 35.0,
     "endspeed": 1000.0,
-    "tnt": 13.0,
+    "exp_mass": 13.0,
     "pfuse": true,
     "loadfactormax": 20.0,
     "reqaccelmax": 20.0,
@@ -294,7 +302,8 @@
     "minangletosun": 7.0,
     "warmuptime": 4.0,
     "worktime": 30.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 516.2790697674419
   },
   {
     "name": "./index/missiles/su_r_24r.blkx",
@@ -310,7 +319,7 @@
     "dragcx": 0.018,
     "timelife": 45.0,
     "endspeed": 1500.0,
-    "tnt": 13.0,
+    "exp_mass": 13.0,
     "pfuse": true,
     "loadfactormax": 24.0,
     "reqaccelmax": 24.0,
@@ -327,7 +336,8 @@
     "minangletosun": 0.0,
     "warmuptime": 1.0,
     "worktime": 100.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 614.7540983606557
   },
   {
     "name": "./index/missiles/su_r_24t.blkx",
@@ -343,7 +353,7 @@
     "dragcx": 0.018,
     "timelife": 45.0,
     "endspeed": 1500.0,
-    "tnt": 13.0,
+    "exp_mass": 13.0,
     "pfuse": true,
     "loadfactormax": 24.0,
     "reqaccelmax": 24.0,
@@ -360,7 +370,8 @@
     "minangletosun": 7.0,
     "warmuptime": 4.0,
     "worktime": 30.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 632.9113924050633
   },
   {
     "name": "./index/missiles/su_r_3r.blkx",
@@ -376,7 +387,7 @@
     "dragcx": 0.018,
     "timelife": 21.0,
     "endspeed": 1000.0,
-    "tnt": 5.5,
+    "exp_mass": 5.5,
     "pfuse": true,
     "loadfactormax": 10.0,
     "reqaccelmax": 11.0,
@@ -393,7 +404,8 @@
     "minangletosun": 0.0,
     "warmuptime": 2.0,
     "worktime": 15.0,
-    "cageable": false
+    "cageable": false,
+    "deltav": 505.9707835325366
   },
   {
     "name": "./index/missiles/su_r_3s.blkx",
@@ -409,7 +421,7 @@
     "dragcx": 0.018,
     "timelife": 21.0,
     "endspeed": 1000.0,
-    "tnt": 5.5,
+    "exp_mass": 5.5,
     "pfuse": true,
     "loadfactormax": 10.0,
     "reqaccelmax": 11.0,
@@ -426,7 +438,8 @@
     "minangletosun": 20.0,
     "warmuptime": 6.0,
     "worktime": 15.0,
-    "cageable": false
+    "cageable": false,
+    "deltav": 505.9707835325366
   },
   {
     "name": "./index/missiles/su_r_60.blkx",
@@ -442,7 +455,7 @@
     "dragcx": 0.015,
     "timelife": 21.0,
     "endspeed": 0.0,
-    "tnt": 1.15,
+    "exp_mass": 1.15,
     "pfuse": true,
     "loadfactormax": 30.0,
     "reqaccelmax": 30.0,
@@ -459,7 +472,8 @@
     "minangletosun": 10.0,
     "warmuptime": 6.0,
     "worktime": 15.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 647.7272727272727
   },
   {
     "name": "./index/missiles/su_r_60m.blkx",
@@ -475,7 +489,7 @@
     "dragcx": 0.015,
     "timelife": 21.0,
     "endspeed": 0.0,
-    "tnt": 1.35,
+    "exp_mass": 1.35,
     "pfuse": true,
     "loadfactormax": 30.0,
     "reqaccelmax": 30.0,
@@ -492,7 +506,8 @@
     "minangletosun": 7.0,
     "warmuptime": 6.0,
     "worktime": 15.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 647.7272727272727
   },
   {
     "name": "./index/missiles/swd_rb24.blkx",
@@ -508,7 +523,7 @@
     "dragcx": 0.018,
     "timelife": 20.0,
     "endspeed": 1000.0,
-    "tnt": 4.76,
+    "exp_mass": 4.76,
     "pfuse": true,
     "loadfactormax": 10.0,
     "reqaccelmax": 11.0,
@@ -525,7 +540,8 @@
     "minangletosun": 20.0,
     "warmuptime": 4.0,
     "worktime": 15.0,
-    "cageable": false
+    "cageable": false,
+    "deltav": 523.337467272978
   },
   {
     "name": "./index/missiles/swd_rb24j.blkx",
@@ -541,7 +557,7 @@
     "dragcx": 0.018,
     "timelife": 40.0,
     "endspeed": 1000.0,
-    "tnt": 4.76,
+    "exp_mass": 4.76,
     "pfuse": true,
     "loadfactormax": 20.0,
     "reqaccelmax": 20.0,
@@ -558,7 +574,8 @@
     "minangletosun": 10.0,
     "warmuptime": 5.0,
     "worktime": 10.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 517.6134147926687
   },
   {
     "name": "./index/missiles/swd_rb71.blkx",
@@ -574,7 +591,7 @@
     "dragcx": 0.018,
     "timelife": 40.0,
     "endspeed": 1500.0,
-    "tnt": 9.0,
+    "exp_mass": 9.0,
     "pfuse": true,
     "loadfactormax": 25.0,
     "reqaccelmax": 25.0,
@@ -591,7 +608,8 @@
     "minangletosun": 0.0,
     "warmuptime": 1.4,
     "worktime": 100.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 507.77202072538853
   },
   {
     "name": "./index/missiles/uk_firestreak.blkx",
@@ -607,7 +625,7 @@
     "dragcx": 0.025,
     "timelife": 13.0,
     "endspeed": 1000.0,
-    "tnt": 22.7,
+    "exp_mass": 22.7,
     "pfuse": true,
     "loadfactormax": 15.0,
     "reqaccelmax": 15.0,
@@ -624,7 +642,8 @@
     "minangletosun": 3.0,
     "warmuptime": 5.0,
     "worktime": 20.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 530.8823529411765
   },
   {
     "name": "./index/missiles/uk_redtop.blkx",
@@ -640,7 +659,7 @@
     "dragcx": 0.025,
     "timelife": 40.0,
     "endspeed": 1300.0,
-    "tnt": 31.0,
+    "exp_mass": 31.0,
     "pfuse": true,
     "loadfactormax": 16.0,
     "reqaccelmax": 16.0,
@@ -657,7 +676,8 @@
     "minangletosun": 3.0,
     "warmuptime": 5.0,
     "worktime": 20.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 538.9221556886228
   },
   {
     "name": "./index/missiles/uk_skyflash_aim_7.blkx",
@@ -673,7 +693,7 @@
     "dragcx": 0.018,
     "timelife": 40.0,
     "endspeed": 1500.0,
-    "tnt": 9.0,
+    "exp_mass": 9.0,
     "pfuse": true,
     "loadfactormax": 15.0,
     "reqaccelmax": 15.0,
@@ -690,7 +710,8 @@
     "minangletosun": 0.0,
     "warmuptime": 1.4,
     "worktime": 100.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 507.77202072538853
   },
   {
     "name": "./index/missiles/uk_skyflash_aim_7_dogfight.blkx",
@@ -706,7 +727,7 @@
     "dragcx": 0.018,
     "timelife": 40.0,
     "endspeed": 1500.0,
-    "tnt": 9.0,
+    "exp_mass": 9.0,
     "pfuse": true,
     "loadfactormax": 25.0,
     "reqaccelmax": 25.0,
@@ -723,7 +744,8 @@
     "minangletosun": 0.0,
     "warmuptime": 1.4,
     "worktime": 100.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 507.77202072538853
   },
   {
     "name": "./index/missiles/uk_sraam.blkx",
@@ -739,7 +761,7 @@
     "dragcx": 0.014,
     "timelife": 3.7,
     "endspeed": 1000.0,
-    "tnt": 4.0,
+    "exp_mass": 4.0,
     "pfuse": true,
     "loadfactormax": 20.0,
     "reqaccelmax": 0.0,
@@ -756,7 +778,8 @@
     "minangletosun": 10.0,
     "warmuptime": 3.0,
     "worktime": 20.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 699.4285714285716
   },
   {
     "name": "./index/missiles/us_aim7c_sparrow.blkx",
@@ -772,7 +795,7 @@
     "dragcx": 0.018,
     "timelife": 20.0,
     "endspeed": 1500.0,
-    "tnt": 9.0,
+    "exp_mass": 9.0,
     "pfuse": true,
     "loadfactormax": 15.0,
     "reqaccelmax": 15.0,
@@ -789,7 +812,8 @@
     "minangletosun": 0.0,
     "warmuptime": 1.0,
     "worktime": 60.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 381.90697674418607
   },
   {
     "name": "./index/missiles/us_aim7d_sparrow.blkx",
@@ -805,7 +829,7 @@
     "dragcx": 0.018,
     "timelife": 40.0,
     "endspeed": 1500.0,
-    "tnt": 9.0,
+    "exp_mass": 9.0,
     "pfuse": true,
     "loadfactormax": 15.0,
     "reqaccelmax": 15.0,
@@ -822,7 +846,8 @@
     "minangletosun": 0.0,
     "warmuptime": 1.4,
     "worktime": 100.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 437.0558375634518
   },
   {
     "name": "./index/missiles/us_aim7e2_dogfight_sparrow.blkx",
@@ -838,7 +863,7 @@
     "dragcx": 0.018,
     "timelife": 40.0,
     "endspeed": 1500.0,
-    "tnt": 9.0,
+    "exp_mass": 9.0,
     "pfuse": true,
     "loadfactormax": 25.0,
     "reqaccelmax": 25.0,
@@ -855,7 +880,8 @@
     "minangletosun": 0.0,
     "warmuptime": 1.4,
     "worktime": 100.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 505.93701600413004
   },
   {
     "name": "./index/missiles/us_aim7e_sparrow.blkx",
@@ -871,7 +897,7 @@
     "dragcx": 0.018,
     "timelife": 40.0,
     "endspeed": 1500.0,
-    "tnt": 9.0,
+    "exp_mass": 9.0,
     "pfuse": true,
     "loadfactormax": 25.0,
     "reqaccelmax": 25.0,
@@ -888,7 +914,8 @@
     "minangletosun": 0.0,
     "warmuptime": 1.4,
     "worktime": 100.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 478.04878048780483
   },
   {
     "name": "./index/missiles/us_aim92_stinger.blkx",
@@ -904,7 +931,7 @@
     "dragcx": 0.018,
     "timelife": 17.0,
     "endspeed": 1000.0,
-    "tnt": 0.45,
+    "exp_mass": 0.45,
     "pfuse": false,
     "loadfactormax": 10.0,
     "reqaccelmax": 10.0,
@@ -921,7 +948,8 @@
     "minangletosun": 5.0,
     "warmuptime": 4.0,
     "worktime": 60.0,
-    "cageable": false
+    "cageable": false,
+    "deltav": 1089.1089108910892
   },
   {
     "name": "./index/missiles/us_aim9b_fgw_2_sidewinder.blkx",
@@ -937,7 +965,7 @@
     "dragcx": 0.018,
     "timelife": 20.0,
     "endspeed": 1000.0,
-    "tnt": 4.76,
+    "exp_mass": 4.76,
     "pfuse": true,
     "loadfactormax": 10.0,
     "reqaccelmax": 11.0,
@@ -954,7 +982,8 @@
     "minangletosun": 10.0,
     "warmuptime": 4.0,
     "worktime": 15.0,
-    "cageable": false
+    "cageable": false,
+    "deltav": 523.337467272978
   },
   {
     "name": "./index/missiles/us_aim9b_sidewinder.blkx",
@@ -970,7 +999,7 @@
     "dragcx": 0.018,
     "timelife": 20.0,
     "endspeed": 1000.0,
-    "tnt": 4.76,
+    "exp_mass": 4.76,
     "pfuse": true,
     "loadfactormax": 10.0,
     "reqaccelmax": 11.0,
@@ -987,7 +1016,8 @@
     "minangletosun": 20.0,
     "warmuptime": 4.0,
     "worktime": 15.0,
-    "cageable": false
+    "cageable": false,
+    "deltav": 523.337467272978
   },
   {
     "name": "./index/missiles/us_aim9c_sidewinder.blkx",
@@ -1003,7 +1033,7 @@
     "dragcx": 0.018,
     "timelife": 60.0,
     "endspeed": 1000.0,
-    "tnt": 2.95,
+    "exp_mass": 2.95,
     "pfuse": true,
     "loadfactormax": 18.0,
     "reqaccelmax": 18.0,
@@ -1020,7 +1050,8 @@
     "minangletosun": 0.0,
     "warmuptime": 2.0,
     "worktime": 15.0,
-    "cageable": false
+    "cageable": false,
+    "deltav": 738.8355002826455
   },
   {
     "name": "./index/missiles/us_aim9d_sidewinder.blkx",
@@ -1036,7 +1067,7 @@
     "dragcx": 0.018,
     "timelife": 60.0,
     "endspeed": 1000.0,
-    "tnt": 2.95,
+    "exp_mass": 2.95,
     "pfuse": true,
     "loadfactormax": 18.0,
     "reqaccelmax": 18.0,
@@ -1053,7 +1084,8 @@
     "minangletosun": 10.0,
     "warmuptime": 5.0,
     "worktime": 10.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 738.8355002826455
   },
   {
     "name": "./index/missiles/us_aim9e_sidewinder.blkx",
@@ -1069,7 +1101,7 @@
     "dragcx": 0.018,
     "timelife": 20.0,
     "endspeed": 1000.0,
-    "tnt": 4.76,
+    "exp_mass": 4.76,
     "pfuse": true,
     "loadfactormax": 10.0,
     "reqaccelmax": 11.0,
@@ -1086,7 +1118,8 @@
     "minangletosun": 10.0,
     "warmuptime": 5.0,
     "worktime": 10.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 520.9996074839722
   },
   {
     "name": "./index/missiles/us_aim9g_sidewinder.blkx",
@@ -1102,7 +1135,7 @@
     "dragcx": 0.018,
     "timelife": 60.0,
     "endspeed": 1000.0,
-    "tnt": 2.76,
+    "exp_mass": 2.76,
     "pfuse": true,
     "loadfactormax": 18.0,
     "reqaccelmax": 18.0,
@@ -1119,7 +1152,8 @@
     "minangletosun": 10.0,
     "warmuptime": 5.0,
     "worktime": 10.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 738.8355002826455
   },
   {
     "name": "./index/missiles/us_aim9j_sidewinder.blkx",
@@ -1135,7 +1169,7 @@
     "dragcx": 0.018,
     "timelife": 40.0,
     "endspeed": 1000.0,
-    "tnt": 4.76,
+    "exp_mass": 4.76,
     "pfuse": true,
     "loadfactormax": 20.0,
     "reqaccelmax": 20.0,
@@ -1152,7 +1186,8 @@
     "minangletosun": 10.0,
     "warmuptime": 5.0,
     "worktime": 10.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 517.6134147926687
   },
   {
     "name": "./index/missiles/us_aim9l_sidewinder.blkx",
@@ -1168,7 +1203,7 @@
     "dragcx": 0.018,
     "timelife": 40.0,
     "endspeed": 1000.0,
-    "tnt": 3.54,
+    "exp_mass": 3.54,
     "pfuse": true,
     "loadfactormax": 30.0,
     "reqaccelmax": 30.0,
@@ -1185,7 +1220,8 @@
     "minangletosun": 10.0,
     "warmuptime": 5.0,
     "worktime": 10.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 753.0191806772438
   },
   {
     "name": "./index/missiles/us_aim9p_sidewinder.blkx",
@@ -1201,7 +1237,7 @@
     "dragcx": 0.018,
     "timelife": 40.0,
     "endspeed": 1000.0,
-    "tnt": 4.76,
+    "exp_mass": 4.76,
     "pfuse": true,
     "loadfactormax": 20.0,
     "reqaccelmax": 20.0,
@@ -1218,6 +1254,7 @@
     "minangletosun": 10.0,
     "warmuptime": 5.0,
     "worktime": 10.0,
-    "cageable": true
+    "cageable": true,
+    "deltav": 517.6134147926687
   }
 ]
