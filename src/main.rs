@@ -1,4 +1,5 @@
 use std::io;
+
 use wt_missile_calc_lib::missiles::Missile;
 
 use calc::generate;
@@ -20,13 +21,35 @@ fn main() {
 		.expect("failed to read from stdin");
 
 	let debug = match line.trim() {
-		"y" => {true}
-		_ => {false}
+		"y" => { true }
+		_ => { false }
 	};
 
 	let mut launch_parameters = LaunchParameter::new_from_parameters(false, 343.0, 0.0, 0.0, 0);
 
-	let missiles = Missile::new_from_generated(Some("./all.json"), None);
+	let mut missiles: Vec<Missile> = vec![];
+
+	#[cfg(not(feature = "inline"))]
+	if let Some(generated) = Missile::new_from_generated(Some("./all.json"), None) {
+		missiles = generated;
+		if debug {
+			println!("Using json-index");
+		}
+	}
+	else {
+		panic!("Cannot find inline json-index")
+	}
+
+	#[cfg(feature = "inline")]
+	if let Some(fallback) = serde_json::from_str(include_str!("../../wt_missile_calc/index/all.json")).unwrap() {
+		missiles = fallback;
+		if debug {
+			println!("Using inline-index");
+		}
+	} else {
+		panic!("Cannot find inline index")
+	}
+
 	loop {
 		run_calc(&missiles, launch_parameters.clone(), debug);
 	}
@@ -48,7 +71,7 @@ fn run_calc(missiles: &Vec<Missile>, launch_parameters: LaunchParameter, debug: 
 	} else {
 		if Missile::select_by_name(missiles, line.trim()).is_none() {
 			println!("Cannot find missile");
-		}else {
+		} else {
 			let missile = Missile::select_by_name(missiles, line.trim()).unwrap();
 
 			generate(&missile, &launch_parameters, 0.1, debug);
