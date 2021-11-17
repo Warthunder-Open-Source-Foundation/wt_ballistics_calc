@@ -27,9 +27,21 @@ pub fn altitude_to_rho(altitude: u32) -> f64 {
 	#[allow(clippy::cast_possible_truncation)]
 	let map = IntoIterator::into_iter(CONSTANTS).map(|t| (t.0, t.1)).collect::<BTreeMap<u32, f64>>();
 
-	for key in map.keys() {
-		if altitude <= *key {
-		return *map.get(key).unwrap();
+	match altitude {
+		// Values below 0 remain base altitude as they are too unpredictable
+		x if x <= 0 => {
+		return CONSTANTS[0].1;
+		}
+		// Values above 10km are interpolated and will use a rough algorithm
+		x if x > 10000 => {
+			return altitude as f64 / 10000.0 * 0.3142;
+		}
+		_ => {
+			for key in map.keys() {
+				if altitude <= *key {
+					return *map.get(key).unwrap();
+				}
+			}
 		}
 	}
 	panic!("Cant find air density for altitude")

@@ -62,10 +62,19 @@ pub fn input_launch_parameters(launch_parameters: &mut LaunchParameter) {
 
 const GRAVITY: f64 = 9.81;
 
+#[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
 pub struct LaunchResults {
 	pub distance_flown: f64,
-	pub max_speed: f64,
+	pub distance_to_missile: f64,
+	pub splash: Splash,
+	pub max_v: f64,
 	pub max_a: f64,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
+pub struct Splash {
+	pub splash: bool,
+	pub at: f64,
 }
 
 pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep: f64, debug: bool) -> LaunchResults {
@@ -77,6 +86,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	let mut velocity: f64 = launch_parameters.start_velocity;
 	let mut distance: f64 = 0.0;
 	let mut altitude: f64 = launch_parameters.altitude as f64;
+	let mut launch_plane_distance: f64 = 0.0;
 
 	#[allow(unused_variables)] // Clippy being retarded again
 		let mut launch_distance: f64 = 0.0;
@@ -96,6 +106,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	let mut closest = f64::MAX;
 	let mut max_v = 0.0;
 	let mut max_a = 0.0;
+	let mut splash: Splash = Splash { splash: false, at: 0.0 };
 
 	// Save allow thanks to abs() and never overflowing value thanks to division beforehand
 	#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
@@ -119,6 +130,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 
 		target_distance += target_velocity * timestep;
 		launch_distance += launch_velocity * timestep;
+		launch_plane_distance += launch_parameters.start_velocity * timestep;
 
 
 		velocity += a * timestep;
@@ -151,9 +163,14 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		}
 
 		if target_distance != 0.0 && target_distance < distance {
-			println!("Splash at {}m! The target is {}m from the launch aircraft after {}s of flight time", target_distance, target_distance - launch_distance, i as f64 * timestep);
-			break;
+			splash.splash = true;
+			splash.at = target_distance - launch_distance;
 		}
+
+		// if target_distance != 0.0 && target_distance < distance {
+		// 	println!("Splash at {}m! The target is {}m from the launch aircraft after {}s of flight time", target_distance, target_distance - launch_distance, i as f64 * timestep);
+		// 	break;
+		// }
 	}
 	println!("max velocity: {}m/s", max_v.round());
 	println!("max distance reached: {}m", distance.round());
@@ -168,7 +185,9 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 
 	LaunchResults {
 		distance_flown: distance,
-		max_speed: max_v,
+		distance_to_missile: distance - launch_plane_distance,
+		splash: splash,
+		max_v,
 		max_a,
 	}
 }
