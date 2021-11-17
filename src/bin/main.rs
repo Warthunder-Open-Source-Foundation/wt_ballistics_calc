@@ -18,9 +18,9 @@ fn main() {
 		_ => { false }
 	};
 
-	let mut launch_parameters = LaunchParameter::new_from_parameters(false, 343.0, 0.0, 0.0, 0);
+	let launch_parameters = LaunchParameter::new_from_parameters(false, 343.0, 0.0, 0.0, 0);
 
-	let mut missiles: Vec<Missile> = vec![];
+	let missiles: Vec<Missile>;
 
 	#[cfg(not(feature = "inline"))]
 	if let Some(generated) = Missile::new_from_generated(Some("./all.json"), None) {

@@ -1,5 +1,3 @@
-use std::collections::{BTreeMap};
-
 pub fn altitude_to_rho(altitude: u32) -> f64 {
 	static CONSTANTS: [(u32, f64); 21] = [
 		(0, 1.209),
@@ -24,25 +22,26 @@ pub fn altitude_to_rho(altitude: u32) -> f64 {
 		(9500, 0.339),
 		(10000, 0.3142),
 	];
-	#[allow(clippy::cast_possible_truncation)]
-	let map = IntoIterator::into_iter(CONSTANTS).map(|t| (t.0, t.1)).collect::<BTreeMap<u32, f64>>();
 
-	match altitude {
+	return match altitude {
 		// Values below 0 remain base altitude as they are too unpredictable
 		x if x <= 0 => {
-		return CONSTANTS[0].1;
+			CONSTANTS[0].1
 		}
 		// Values above 10km are interpolated and will use a rough algorithm
 		x if x > 10000 => {
-			return altitude as f64 / 10000.0 * 0.3142;
+			altitude as f64 / 10000.0 * 0.3142
 		}
 		_ => {
-			for key in map.keys() {
-				if altitude <= *key {
-					return *map.get(key).unwrap();
+			let mut closest = u32::MAX;
+			let mut best = -0.0;
+			for constant in CONSTANTS {
+				if altitude < closest {
+					closest = altitude;
+					best = constant.1;
 				}
 			}
+			best
 		}
-	}
-	panic!("Cant find air density for altitude")
+	};
 }

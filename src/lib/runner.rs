@@ -1,6 +1,5 @@
 use std::f64::consts::PI;
 use std::io::stdin;
-use std::time::Instant;
 use pad::PadStr;
 use wt_missile_calc_lib::missiles::Missile;
 use crate::launch_parameters::LaunchParameter;
@@ -85,7 +84,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	let mut a: f64;
 	let mut velocity: f64 = launch_parameters.start_velocity;
 	let mut distance: f64 = 0.0;
-	let mut altitude: f64 = launch_parameters.altitude as f64;
+	let altitude: f64 = launch_parameters.altitude as f64;
 	let mut launch_plane_distance: f64 = 0.0;
 
 	#[allow(unused_variables)] // Clippy being retarded again
@@ -115,7 +114,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		drag_force = 0.5 * rho * velocity.powi(2) * missile.cxk * area;
 
 
-		let mut engine_stage = "0";
+		let engine_stage;
 
 		if (f64::from(i) * timestep) < missile.timefire0 {
 			a = ((missile.force0 - drag_force) / missile.mass) - gravity;
