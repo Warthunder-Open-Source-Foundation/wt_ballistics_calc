@@ -87,6 +87,9 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	let altitude: f64 = launch_parameters.altitude as f64;
 	let mut launch_plane_distance: f64 = 0.0;
 
+	// IMPORTANT when changing altitude anywhere move this function too
+	let rho = altitude_to_rho(altitude.round() as u32);
+
 	#[allow(unused_variables)] // Clippy being retarded again
 		let mut launch_distance: f64 = 0.0;
 
@@ -110,7 +113,6 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	// Save allow thanks to abs() and never overflowing value thanks to division beforehand
 	#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 	for i in 0..((missile.timelife / timestep).round().abs() as u32) {
-		let rho = altitude_to_rho(altitude.round() as u32);
 		drag_force = 0.5 * rho * velocity.powi(2) * missile.cxk * area;
 
 
