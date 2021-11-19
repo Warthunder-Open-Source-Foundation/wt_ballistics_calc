@@ -186,7 +186,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 
 	LaunchResults {
 		distance_flown: distance,
-		distance_to_missile: target_distance - launch_plane_distance,
+		distance_to_missile: launch_plane_distance,
 		splash: splash,
 		max_v,
 		max_a,
