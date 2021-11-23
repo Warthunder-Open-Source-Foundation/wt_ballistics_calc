@@ -63,9 +63,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.68"
+version = "1.0.71"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f690853975602e1bfe1ccbf50504d67174e3bcf340f23b5ea9992e0587a52d8"
+checksum = "063bf466a64011ac24040a49009724ee60a57da1b437617ceb32e53ad61bfb19"
 dependencies = [
  "itoa",
  "ryu",
@@ -108,7 +108,7 @@ dependencies = [
 [[package]]
 name = "wt_missile_calc"
 version = "0.1.0"
-source = "git+https://github.com/FlareFlo/wt_missile_calc#bc211ea8bdb4f2acde286d043ba0bd1a1756ba8c"
+source = "git+https://github.com/FlareFlo/wt_missile_calc#9ae17ead4fa2310366965ecb50b95b96b027ace2"
 dependencies = [
  "serde",
  "serde_json",
