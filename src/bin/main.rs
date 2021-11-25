@@ -1,5 +1,5 @@
 use std::io;
-use wt_missile_calc_lib::missiles::Missile;
+use wt_datamine_extractor_lib::missile::missile::Missile;
 use wt_ballistics_calc_lib::launch_parameters::LaunchParameter;
 use wt_ballistics_calc_lib::runner::run_calc;
 

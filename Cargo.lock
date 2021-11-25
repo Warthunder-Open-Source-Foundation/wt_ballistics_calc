@@ -102,13 +102,13 @@ dependencies = [
  "pad",
  "serde",
  "serde_json",
- "wt_missile_calc",
+ "wt_datamine_extractor",
 ]
 
 [[package]]
-name = "wt_missile_calc"
-version = "0.1.0"
-source = "git+https://github.com/FlareFlo/wt_missile_calc#9ae17ead4fa2310366965ecb50b95b96b027ace2"
+name = "wt_datamine_extractor"
+version = "0.2.0"
+source = "git+https://github.com/FlareFlo/wt_datamine_extractor#d10aac582009eac094f36d23588172c3a8039883"
 dependencies = [
  "serde",
  "serde_json",
