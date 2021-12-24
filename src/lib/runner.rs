@@ -47,6 +47,7 @@ pub struct LaunchResults {
 	pub max_v: f64,
 	pub max_a: f64,
 	pub min_a: f64,
+	pub timestep: f64,
 	pub profile: Profile,
 }
 
@@ -74,6 +75,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		max_v: 0.0,
 		max_a: 0.0,
 		min_a: 0.0,
+		timestep,
 		profile: Profile { sim_len, a: vec![], v: vec![], d: vec![] }
 	};
 
