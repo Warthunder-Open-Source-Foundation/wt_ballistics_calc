@@ -1,33 +1,11 @@
+use std::cmp::max;
 use std::f64::consts::PI;
 use std::io::stdin;
+use std::panic::resume_unwind;
 use pad::PadStr;
 use wt_datamine_extractor_lib::missile::missile::Missile;
 use crate::launch_parameters::LaunchParameter;
 use crate::rho::altitude_to_rho;
-
-#[allow(clippy::ptr_arg)]
-pub fn run_calc(missiles: &Vec<Missile>, launch_parameters: LaunchParameter, debug: bool) {
-	println!("Enter which missile to test (all lowercase) or leave empty to configure launch selection");
-
-	let mut line = "".to_owned();
-	stdin()
-		.read_line(&mut line)
-		.expect("failed to read from stdin");
-
-	let mut new_parameters = launch_parameters.clone();
-
-	if line.trim().len() == 0 {
-		input_launch_parameters(&mut new_parameters);
-	} else {
-		if Missile::select_by_name(missiles, line.trim()).is_none() {
-			println!("Cannot find missile");
-		} else {
-			let missile = Missile::select_by_name(missiles, line.trim()).unwrap();
-
-			generate(&missile, &launch_parameters, 0.1, debug);
-		}
-	}
-}
 
 pub fn input_launch_parameters(launch_parameters: &mut LaunchParameter) {
 	println!("Enter start/carrier aircraft velocity in m/s (mach 1 = 343m/s)");
@@ -68,15 +46,37 @@ pub struct LaunchResults {
 	pub splash: Splash,
 	pub max_v: f64,
 	pub max_a: f64,
+	pub min_a: f64,
+	pub profile: Profile,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
+pub struct Profile {
+	pub sim_len: u32,
+	pub a: Vec<f64>,
+	pub v: Vec<f64>,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone, Copy)]
 pub struct Splash {
 	pub splash: bool,
 	pub at: f64,
 }
 
 pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep: f64, debug: bool) -> LaunchResults {
+	let sim_len = ((missile.timelife / timestep).round().abs() as u32);
+
+	let mut results: LaunchResults = LaunchResults {
+		distance_flown: 0.0,
+		distance_to_missile: 0.0,
+		splash: Splash { splash: false, at: 0.0 },
+		max_v: 0.0,
+		max_a: 0.0,
+		min_a: 0.0,
+		profile: Profile { sim_len, a: vec![], v: vec![] }
+	};
+
+
 	// let start = Instant::now();
 
 	// State parameters
@@ -108,11 +108,13 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	let mut closest = f64::MAX;
 	let mut max_v = 0.0;
 	let mut max_a = 0.0;
+	let mut min_a = 0.0;
 	let mut splash: Splash = Splash { splash: false, at: 0.0 };
 
 	// Save allow thanks to abs() and never overflowing value thanks to division beforehand
 	#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
-	for i in 0..((missile.timelife / timestep).round().abs() as u32) {
+	for i in 0..sim_len {
+
 		drag_force = 0.5 * rho * velocity.powi(2) * missile.cxk * area;
 
 
@@ -146,9 +148,16 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 			max_a = a;
 		}
 
+		if a < min_a {
+			min_a = a;
+		}
+
 		if target_distance - distance < closest {
 			closest = target_distance - distance;
 		}
+
+		results.profile.a.push(a);
+		results.profile.v.push(velocity);
 
 		if debug {
 			println!("ts(s): {} D(m): {} Dt(m): {} a(m/s²): {} v(m/s): {} d(N): {} rho: {} s: {}",
@@ -184,11 +193,26 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		println!("min missile - target: {}m", closest.round());
 	}
 
-	LaunchResults {
-		distance_flown: distance,
-		distance_to_missile: launch_plane_distance,
-		splash: splash,
-		max_v,
-		max_a,
-	}
+	results.distance_flown = distance;
+	results.distance_to_missile = launch_plane_distance;
+	results.splash = splash;
+	results.max_a = max_a;
+	results.max_v = max_v;
+
+
+	results
+
+	// LaunchResults {
+	// 	distance_flown: distance,
+	// 	distance_to_missile: launch_plane_distance,
+	// 	splash: splash,
+	// 	max_v,
+	// 	max_a,
+	// 	t_to_target: TimeToTarget {
+	// 		t_to_1km: 0.0,
+	// 		t_to_2km: 0.0,
+	// 		t_to_mach2: 0.0,
+	// 		t_to_mach3: 0.0
+	// 	}
+	// }
 }
