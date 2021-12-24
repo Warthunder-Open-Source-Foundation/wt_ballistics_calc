@@ -55,6 +55,7 @@ pub struct Profile {
 	pub sim_len: u32,
 	pub a: Vec<f64>,
 	pub v: Vec<f64>,
+	pub d: Vec<f64>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone, Copy)]
@@ -73,7 +74,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		max_v: 0.0,
 		max_a: 0.0,
 		min_a: 0.0,
-		profile: Profile { sim_len, a: vec![], v: vec![] }
+		profile: Profile { sim_len, a: vec![], v: vec![], d: vec![] }
 	};
 
 
@@ -158,6 +159,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 
 		results.profile.a.push(a);
 		results.profile.v.push(velocity);
+		results.profile.d.push(distance);
 
 		if debug {
 			println!("ts(s): {} D(m): {} Dt(m): {} a(m/s²): {} v(m/s): {} d(N): {} rho: {} s: {}",
