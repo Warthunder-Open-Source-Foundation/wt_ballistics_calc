@@ -1,11 +1,13 @@
 use std::io;
+
+use plotters::prelude::*;
 use wt_datamine_extractor_lib::missile::missile::Missile;
+
 use wt_ballistics_calc_lib::launch_parameters::LaunchParameter;
 use wt_ballistics_calc_lib::runner::{generate, LaunchResults};
-use plotters::prelude::*;
 
 fn main() {
-	let target = 5;
+	let target = 27;
 	let missiles: Vec<Missile> = serde_json::from_str(&std::fs::read_to_string("../wt_datamine_extractor/missile_index/all.json").unwrap()).unwrap();
 	let results = generate(&missiles[target], &LaunchParameter::new_from_default_hor(), 0.1, true);
 	println!("{}", missiles[target].name);
@@ -18,6 +20,11 @@ fn main() {
 	let mut a_profile: Vec<(f32, f64)> = Vec::new();
 	for i in results.profile.a.clone().iter().enumerate() {
 		a_profile.push((i.0 as f32, *i.1 as f64));
+	}
+
+	let mut d_profile: Vec<(f32, f64)> = Vec::new();
+	for i in results.profile.d.clone().iter().enumerate() {
+		d_profile.push((i.0 as f32, *i.1 / 20 as f64));
 	}
 
 	let root = BitMapBackend::new("5.png", (640, 480)).into_drawing_area();
@@ -51,5 +58,10 @@ fn main() {
 	chart.draw_series(LineSeries::new(
 		a_profile,
 		&BLUE,
+	)).unwrap();
+
+	chart.draw_series(LineSeries::new(
+		d_profile,
+		&GREEN,
 	)).unwrap();
 }
