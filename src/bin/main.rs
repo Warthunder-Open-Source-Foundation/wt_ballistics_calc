@@ -8,15 +8,17 @@ use wt_datamine_extractor_lib::missile::missile::Missile;
 use wt_ballistics_calc_lib::launch_parameters::LaunchParameter;
 use wt_ballistics_calc_lib::runner::{generate};
 
-const WIDTH: u32 = 1920;
-const HEIGHT: u32 = 1080;
+const WIDTH: u32 = 3840;
+const HEIGHT: u32 = 2160;
+
+const TIMESTEP: f64 = 0.001;
 
 fn main() {
 	let start = Instant::now();
 
 	let target = 18;
 	let missiles: Vec<Missile> = serde_json::from_str(&std::fs::read_to_string("../wt_datamine_extractor/missile_index/all.json").unwrap()).unwrap();
-	let results = generate(&missiles[target], &LaunchParameter::new_from_default_hor(), 0.1, false);
+	let results = generate(&missiles[target], &LaunchParameter::new_from_default_hor(), TIMESTEP, false);
 	println!("{}", missiles[target].name);
 
 	let mut v_profile: Vec<(f32, f64)> = Vec::new();
@@ -57,6 +59,7 @@ fn main() {
 		.x_desc("time in s")
 		// We can also change the format of the label text
 		.y_label_formatter(&|x| format!("{:.0}", x))
+		.x_label_formatter(&|x| format!("{}", x /  TIMESTEP.powi(-1) as f32))
 		.draw().unwrap();
 
 
@@ -83,7 +86,7 @@ fn main() {
 		.legend(|(x, y)| PathElement::new(vec![(x, y), (x + (WIDTH / 50) as i32, y)], &GREEN));
 
 	chart.draw_series(LineSeries::new(
-		vec![(0.0, 0.0), (WIDTH as f32, 0.0)],
+		vec![(0.0, 0.0), (WIDTH as f32 * TIMESTEP.powi(-1) as f32, 0.0)],
 		&BLACK,
 	)).unwrap();
 
