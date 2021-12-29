@@ -1,25 +1,27 @@
-
 use std::time::Instant;
 
 use plotters::prelude::*;
-
 use wt_datamine_extractor_lib::missile::missile::Missile;
 
 use wt_ballistics_calc_lib::launch_parameters::LaunchParameter;
-use wt_ballistics_calc_lib::runner::{generate};
+use wt_ballistics_calc_lib::runner::generate;
 
 const WIDTH: u32 = 3840;
 const HEIGHT: u32 = 2160;
 
 const TIMESTEP: f64 = 0.001;
 
+const FONT_AXIS: u32 = ((WIDTH + HEIGHT) / 2) as u32;
+
 fn main() {
 	let start = Instant::now();
 
-	let target = 18;
 	let missiles: Vec<Missile> = serde_json::from_str(&std::fs::read_to_string("../wt_datamine_extractor/missile_index/all.json").unwrap()).unwrap();
-	let results = generate(&missiles[target], &LaunchParameter::new_from_default_hor(), TIMESTEP, false);
-	println!("{}", missiles[target].name);
+
+	let missile = Missile::select_by_name(&missiles, "su_r_60").unwrap();
+
+	let results = generate(&missile, &LaunchParameter::new_from_default_hor(), TIMESTEP, false);
+	println!("{}", missile.name);
 
 	let mut v_profile: Vec<(f32, f64)> = Vec::new();
 	for i in results.profile.v.clone().iter().enumerate() {
@@ -45,8 +47,9 @@ fn main() {
 		// Set the size of the label region
 		.x_label_area_size(20)
 		.y_label_area_size(40)
-		.set_label_area_size(LabelAreaPosition::Bottom, 40)
-		.caption(&format!("{}", &missiles[target].localized), ("sans-serif", 50))
+		.set_label_area_size(LabelAreaPosition::Bottom, FONT_AXIS / 50)
+		.set_label_area_size(LabelAreaPosition::Left, FONT_AXIS / 50)
+		.caption(&format!("{}", &missile.localized), ("sans-serif", FONT_AXIS / 20))
 		// Finally attach a coordinate on the drawing area and make a chart context
 		.build_cartesian_2d(0f32..results.profile.sim_len as f32 * 1.1, -(results.min_a.abs() + 50.0)..(results.max_v + 50.0)).unwrap();
 
@@ -57,9 +60,11 @@ fn main() {
 		.x_labels(50)
 		.y_labels(50)
 		.x_desc("time in s")
+		.x_label_style(("sans-serif", FONT_AXIS / 100))
+		.y_label_style(("sans-serif", FONT_AXIS / 100))
 		// We can also change the format of the label text
 		.y_label_formatter(&|x| format!("{:.0}", x))
-		.x_label_formatter(&|x| format!("{}", x /  TIMESTEP.powi(-1) as f32))
+		.x_label_formatter(&|x| format!("{}", x / TIMESTEP.powi(-1) as f32))
 		.draw().unwrap();
 
 
@@ -98,7 +103,7 @@ fn main() {
 		.border_style(&BLACK)
 		.background_style(&WHITE.mix(0.8))
 		.legend_area_size(WIDTH / 40)
-		.label_font(("sans-serif", 20))
+		.label_font(("sans-serif", FONT_AXIS / 50))
 		.draw().unwrap();
 
 	println!("{:?}", start.elapsed());
