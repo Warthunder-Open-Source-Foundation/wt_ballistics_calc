@@ -23,7 +23,7 @@ impl LaunchParameter {
 			start_velocity: 343.0,
 			distance_to_target: 0.0,
 			target_speed: 0.0,
-			altitude: 0
+			altitude: 1000
 		}
 	}
 }
