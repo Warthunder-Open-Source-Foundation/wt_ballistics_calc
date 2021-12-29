@@ -94,7 +94,7 @@ fn main() {
 	chart.configure_series_labels()
 		.border_style(&BLACK)
 		.background_style(&WHITE.mix(0.8))
-		.legend_area_size(50)
+		.legend_area_size(WIDTH / 40)
 		.label_font(("sans-serif", 20))
 		.draw().unwrap();
 
