@@ -1,7 +1,7 @@
-use std::cmp::max;
+
 use std::f64::consts::PI;
 use std::io::stdin;
-use std::panic::resume_unwind;
+
 use pad::PadStr;
 use wt_datamine_extractor_lib::missile::missile::Missile;
 use crate::launch_parameters::LaunchParameter;
@@ -66,7 +66,7 @@ pub struct Splash {
 }
 
 pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep: f64, debug: bool) -> LaunchResults {
-	let sim_len = ((missile.timelife / timestep).round().abs() as u32);
+	let sim_len = (missile.timelife / timestep).round().abs() as u32;
 
 	let mut results: LaunchResults = LaunchResults {
 		distance_flown: 0.0,

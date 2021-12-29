@@ -1,15 +1,22 @@
-use std::io;
+
+use std::time::Instant;
 
 use plotters::prelude::*;
+
 use wt_datamine_extractor_lib::missile::missile::Missile;
 
 use wt_ballistics_calc_lib::launch_parameters::LaunchParameter;
-use wt_ballistics_calc_lib::runner::{generate, LaunchResults};
+use wt_ballistics_calc_lib::runner::{generate};
+
+const WIDTH: u32 = 1920;
+const HEIGHT: u32 = 1080;
 
 fn main() {
-	let target = 27;
+	let start = Instant::now();
+
+	let target = 18;
 	let missiles: Vec<Missile> = serde_json::from_str(&std::fs::read_to_string("../wt_datamine_extractor/missile_index/all.json").unwrap()).unwrap();
-	let results = generate(&missiles[target], &LaunchParameter::new_from_default_hor(), 0.1, true);
+	let results = generate(&missiles[target], &LaunchParameter::new_from_default_hor(), 0.1, false);
 	println!("{}", missiles[target].name);
 
 	let mut v_profile: Vec<(f32, f64)> = Vec::new();
@@ -24,28 +31,32 @@ fn main() {
 
 	let mut d_profile: Vec<(f32, f64)> = Vec::new();
 	for i in results.profile.d.clone().iter().enumerate() {
-		d_profile.push((i.0 as f32, *i.1 / 20 as f64));
+		d_profile.push((i.0 as f32, *i.1 / 10 as f64));
 	}
 
-	let root = BitMapBackend::new("5.png", (640, 480)).into_drawing_area();
-	root.fill(&WHITE);
+
+	let root = BitMapBackend::new("5.png", (WIDTH, HEIGHT)).into_drawing_area();
+	root.fill(&WHITE).unwrap();
 	let root = root.margin(10, 10, 10, 10);
 	// After this point, we should be able to draw construct a chart context
 	let mut chart = ChartBuilder::on(&root)
 		// Set the size of the label region
 		.x_label_area_size(20)
 		.y_label_area_size(40)
+		.set_label_area_size(LabelAreaPosition::Bottom, 40)
+		.caption(&format!("{}", &missiles[target].localized), ("sans-serif", 50))
 		// Finally attach a coordinate on the drawing area and make a chart context
-		.build_cartesian_2d(0f32..results.profile.sim_len as f32 * 1.1, -(results.min_a + 200.0)..(results.max_v + 50.0)).unwrap();
+		.build_cartesian_2d(0f32..results.profile.sim_len as f32 * 1.1, -(results.min_a.abs() + 50.0)..(results.max_v + 50.0)).unwrap();
 
 	// Then we can draw a mesh
 	chart
 		.configure_mesh()
 		// We can customize the maximum number of labels allowed for each axis
-		.x_labels(10)
-		.y_labels(10)
+		.x_labels(50)
+		.y_labels(50)
+		.x_desc("time in s")
 		// We can also change the format of the label text
-		.y_label_formatter(&|x| format!("{:.3}", x))
+		.y_label_formatter(&|x| format!("{:.0}", x))
 		.draw().unwrap();
 
 
@@ -53,15 +64,39 @@ fn main() {
 	chart.draw_series(LineSeries::new(
 		v_profile,
 		&RED,
-	)).unwrap();
+	)).unwrap()
+		.label("Velocity m/s")
+		.legend(|(x, y)| PathElement::new(vec![(x, y), (x + (WIDTH / 50) as i32, y)], &RED));
 
 	chart.draw_series(LineSeries::new(
 		a_profile,
 		&BLUE,
-	)).unwrap();
+	)).unwrap()
+		.label("Acceleration m/s²")
+		.legend(|(x, y)| PathElement::new(vec![(x, y), (x + (WIDTH / 50) as i32, y)], &BLUE));
 
 	chart.draw_series(LineSeries::new(
 		d_profile,
 		&GREEN,
+	)).unwrap()
+		.label("Distance m / 10")
+		.legend(|(x, y)| PathElement::new(vec![(x, y), (x + (WIDTH / 50) as i32, y)], &GREEN));
+
+	chart.draw_series(LineSeries::new(
+		vec![(0.0, 0.0), (WIDTH as f32, 0.0)],
+		&BLACK,
 	)).unwrap();
+
+	// chart.draw_series(
+	// 	vec![(3.1_f32, 4.1)].iter().map(|point| TriangleMarker::new(*point, 5, &BLUE)),
+	// ).unwrap();
+
+	chart.configure_series_labels()
+		.border_style(&BLACK)
+		.background_style(&WHITE.mix(0.8))
+		.legend_area_size(50)
+		.label_font(("sans-serif", 20))
+		.draw().unwrap();
+
+	println!("{:?}", start.elapsed());
 }
