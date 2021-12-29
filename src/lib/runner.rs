@@ -202,6 +202,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	results.splash = splash;
 	results.max_a = max_a;
 	results.max_v = max_v;
+	results.min_a = min_a;
 
 
 	results
