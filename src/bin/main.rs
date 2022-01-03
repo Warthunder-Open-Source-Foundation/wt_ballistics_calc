@@ -9,7 +9,7 @@ use wt_ballistics_calc_lib::runner::generate;
 const WIDTH: u32 = 3840;
 const HEIGHT: u32 = 2160;
 
-const TIMESTEP: f64 = 0.001;
+const TIMESTEP: f64 = 0.1;
 
 const FONT_AXIS: u32 = ((WIDTH + HEIGHT) / 2) as u32;
 
@@ -18,10 +18,10 @@ fn main() {
 
 	let missiles: Vec<Missile> = serde_json::from_str(&std::fs::read_to_string("../wt_datamine_extractor/missile_index/all.json").unwrap()).unwrap();
 
-	let missile = Missile::select_by_name(&missiles, "su_r_60").unwrap();
+	let missile = Missile::select_by_name(&missiles, "su_pl5b").unwrap();
 
 	let results = generate(&missile, &LaunchParameter::new_from_default_hor(), TIMESTEP, false);
-	println!("{}", missile.name);
+	println!("{}", "Finished simulation");
 
 	let mut v_profile: Vec<(f32, f64)> = Vec::new();
 	for i in results.profile.v.clone().iter().enumerate() {
@@ -37,11 +37,19 @@ fn main() {
 	for i in results.profile.d.clone().iter().enumerate() {
 		d_profile.push((i.0 as f32, *i.1 / 10 as f64));
 	}
+	println!("{}", "Calculated profiles");
 
 
 	let root = BitMapBackend::new("5.png", (WIDTH, HEIGHT)).into_drawing_area();
 	root.fill(&WHITE).unwrap();
 	let root = root.margin(10, 10, 10, 10);
+
+	println!("{}", "Created chart");
+
+	let x_dim = 0f32..results.profile.sim_len as f32 * 1.1;
+	let y_dim = -(results.min_a.abs() + 50.0).round()..(results.max_v + 50.0).round();
+	println!("{:?}", y_dim);
+
 	// After this point, we should be able to draw construct a chart context
 	let mut chart = ChartBuilder::on(&root)
 		// Set the size of the label region
@@ -51,7 +59,7 @@ fn main() {
 		.set_label_area_size(LabelAreaPosition::Left, FONT_AXIS / 50)
 		.caption(&format!("{}", &missile.localized), ("sans-serif", FONT_AXIS / 20))
 		// Finally attach a coordinate on the drawing area and make a chart context
-		.build_cartesian_2d(0f32..results.profile.sim_len as f32 * 1.1, -(results.min_a.abs() + 50.0)..(results.max_v + 50.0)).unwrap();
+		.build_cartesian_2d(x_dim, -200.0..800.0).unwrap(); // Any y range >= 1000 breaks the tool
 
 	// Then we can draw a mesh
 	chart
@@ -66,6 +74,8 @@ fn main() {
 		.y_label_formatter(&|x| format!("{:.0}", x))
 		.x_label_formatter(&|x| format!("{}", x / TIMESTEP.powi(-1) as f32))
 		.draw().unwrap();
+
+	println!("{}", "Configured meshes");
 
 
 	// And we can draw something in the drawing area

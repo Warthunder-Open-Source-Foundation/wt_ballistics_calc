@@ -186,11 +186,11 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		// 	break;
 		// }
 	}
-	println!("max velocity: {}m/s", max_v.round());
-	println!("max distance reached: {}m", distance.round());
 
 	if debug {
 		// println!("Simulation took: {:?}", start.elapsed());
+		println!("max velocity: {}m/s", max_v.round());
+		println!("max distance reached: {}m", distance.round());
 	}
 
 	if launch_parameters.target_speed != 0.0 {
