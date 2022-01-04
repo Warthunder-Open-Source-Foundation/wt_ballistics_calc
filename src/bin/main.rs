@@ -48,7 +48,7 @@ fn main() {
 
 	let x_dim = 0f32..results.profile.sim_len as f32 * 1.1;
 	let y_dim = -(results.min_a.abs() + 50.0).round()..(results.max_v + 50.0).round();
-	println!("{:?}", y_dim);
+	println!("{:?} {:?}", x_dim, y_dim);
 
 	// After this point, we should be able to draw construct a chart context
 	let mut chart = ChartBuilder::on(&root)
