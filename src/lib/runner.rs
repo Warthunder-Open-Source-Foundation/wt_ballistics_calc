@@ -127,18 +127,19 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		let burn_0 = 0.0..missile.timefire0;
 		let burn_1 = burn_0.end..burn_0.end + missile.timefire1;
 
-		let burn_time = f64::from(i) * timestep;
-		let compute_mass = |delta_mass, mass_end, timefire| {
-			delta_mass - ((delta_mass - mass_end) / timefire * burn_time)
+		let flight_time = f64::from(i) * timestep;
+		let compute_delta_mass = |mass, mass_end, timefire, relative_time| {
+			((mass - mass_end) * ((flight_time - relative_time) / timefire))
 		};
+
 		match () {
-			_ if burn_0.contains(&burn_time) => {
-				mass = compute_mass(missile.mass, missile.mass_end, missile.timefire0);
+			_ if burn_0.contains(&flight_time) => {
+				mass = missile.mass - compute_delta_mass(missile.mass, missile.mass_end, missile.timefire0, 0.0);
 				force = missile.force0;
 				engine_stage = "0";
 			}
-			_ if burn_1.contains(&burn_time) => {
-				mass = compute_mass(missile.mass_end, missile.mass_end1, missile.timefire1);
+			_ if burn_1.contains(&flight_time) => {
+				mass =  missile.mass_end - compute_delta_mass(missile.mass_end, missile.mass_end1, missile.timefire1, missile.timefire0);
 				force = missile.force1;
 				engine_stage = "1";
 			}
@@ -148,7 +149,6 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 				engine_stage = "-";
 			}
 		}
-		// println!("{}", mass);
 
 		a = ((force - drag_force) / mass) - gravity;
 
