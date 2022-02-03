@@ -122,17 +122,36 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 
 
 		let engine_stage;
+		let mass;
+		let force;
 
-		if (f64::from(i) * timestep) < missile.timefire0 {
-			a = ((missile.force0 - drag_force) / missile.mass) - gravity;
-			engine_stage = "0";
-		} else if missile.timefire1 != 0.0 && (f64::from(i) * timestep) < missile.timefire1 {
-			a = ((missile.force1 - drag_force) / missile.mass) - gravity;
-			engine_stage = "1";
-		} else {
-			a = (-drag_force / missile.mass_end) - gravity;
-			engine_stage = "-";
+		let burn_0 = 0.0..missile.timefire0;
+		let burn_1 = burn_0.end..missile.timefire1;
+
+		let burn_time = f64::from(i) * timestep;
+		let compute_mass = |mass_end, timefire| {
+			missile.mass + (missile.mass - mass_end) * (burn_time/ timefire)
+		};
+		match () {
+			_ if burn_0.contains(&burn_time) => {
+				mass = compute_mass(missile.mass_end, missile.timefire0);
+				force = missile.force0;
+				engine_stage = "0";
+			}
+			_ if burn_1.contains(&burn_time) => {
+				mass = compute_mass(missile.mass_end1, missile.timefire1);
+				force = missile.force1;
+				engine_stage = "1";
+			}
+			_ => {
+				mass = missile.mass_end;
+				force = 0.0;
+				engine_stage = "-";
+			}
 		}
+
+		a = ((force - drag_force) / mass) - gravity;
+
 
 		target_distance += target_velocity * timestep;
 		launch_distance += launch_velocity * timestep;
