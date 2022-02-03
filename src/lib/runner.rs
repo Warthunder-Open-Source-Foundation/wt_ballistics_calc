@@ -1,9 +1,9 @@
-
 use std::f64::consts::PI;
 use std::io::stdin;
 
 use pad::PadStr;
 use wt_datamine_extractor_lib::missile::missile::Missile;
+
 use crate::launch_parameters::LaunchParameter;
 use crate::rho::altitude_to_rho;
 
@@ -76,7 +76,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		max_a: 0.0,
 		min_a: 0.0,
 		timestep,
-		profile: Profile { sim_len, a: vec![], v: vec![], d: vec![] }
+		profile: Profile { sim_len, a: vec![], v: vec![], d: vec![] },
 	};
 
 
@@ -117,7 +117,6 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	// Save allow thanks to abs() and never overflowing value thanks to division beforehand
 	#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 	for i in 0..sim_len {
-
 		drag_force = 0.5 * rho * velocity.powi(2) * missile.cxk * area;
 
 
@@ -129,26 +128,27 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		let burn_1 = burn_0.end..missile.timefire1;
 
 		let burn_time = f64::from(i) * timestep;
-		let compute_mass = |mass_end, timefire| {
-			missile.mass + (missile.mass - mass_end) * (burn_time/ timefire)
+		let compute_mass = |delta_mass, mass_end, timefire| {
+			delta_mass - ((delta_mass - mass_end) / timefire * burn_time)
 		};
 		match () {
 			_ if burn_0.contains(&burn_time) => {
-				mass = compute_mass(missile.mass_end, missile.timefire0);
+				mass = compute_mass(missile.mass, missile.mass_end, missile.timefire0);
 				force = missile.force0;
 				engine_stage = "0";
 			}
 			_ if burn_1.contains(&burn_time) => {
-				mass = compute_mass(missile.mass_end1, missile.timefire1);
+				mass = compute_mass(missile.mass_end, missile.mass_end1, missile.timefire1);
 				force = missile.force1;
 				engine_stage = "1";
 			}
 			_ => {
-				mass = missile.mass_end;
+				mass = missile.mass_end1;
 				force = 0.0;
 				engine_stage = "-";
 			}
 		}
+		// println!("{}", mass);
 
 		a = ((force - drag_force) / mass) - gravity;
 
@@ -183,14 +183,15 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		results.profile.d.push(distance);
 
 		if debug {
-			println!("ts(s): {} D(m): {} Dt(m): {} a(m/s²): {} v(m/s): {} d(N): {} rho: {} s: {}",
+			println!("ts(s): {} D(m): {} Dt(m): {} a(m/s²): {} v(m/s): {} d(N): {} rho: {} m(kg): {} s: {}",
 					 format!("{:.1}", (i as f64 * timestep)).to_string().pad_to_width(4),
 					 distance.round().to_string().pad_to_width(4),
 					 target_distance.round().to_string().pad_to_width(4),
 					 a.round().to_string().pad_to_width(3),
 					 velocity.round().to_string().pad_to_width(4),
-					 drag_force.round().to_string().pad_to_width(4),
-					 rho.to_string().pad_to_width(6),
+					 drag_force.round().to_string().pad_to_width(5),
+					 rho.to_string()[..6].pad_to_width(4),
+					 mass.to_string()[..5].pad_to_width(5),
 					 engine_stage.pad_to_width(1),
 			);
 		}
