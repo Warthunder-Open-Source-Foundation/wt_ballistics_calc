@@ -125,7 +125,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		let force;
 
 		let burn_0 = 0.0..missile.timefire0;
-		let burn_1 = burn_0.end..missile.timefire1;
+		let burn_1 = burn_0.end..burn_0.end + missile.timefire1;
 
 		let burn_time = f64::from(i) * timestep;
 		let compute_mass = |delta_mass, mass_end, timefire| {
