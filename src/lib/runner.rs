@@ -185,7 +185,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		if debug {
 			println!("ts(s): {} D(m): {} Dt(m): {} a(m/s²): {} v(m/s): {} d(N): {} rho: {} m(kg): {} s: {}",
 					 format!("{:.1}", (i as f64 * timestep)).to_string().pad_to_width(4),
-					 distance.round().to_string().pad_to_width(4),
+					 distance.round().to_string().pad_to_width(5),
 					 target_distance.round().to_string().pad_to_width(4),
 					 a.round().to_string().pad_to_width(3),
 					 velocity.round().to_string().pad_to_width(4),
