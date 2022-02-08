@@ -18,7 +18,7 @@ fn main() {
 
 	let missiles: Vec<Missile> = serde_json::from_str(&std::fs::read_to_string("../wt_datamine_extractor/missile_index/all.json").unwrap()).unwrap();
 
-	let missile = Missile::select_by_name(&missiles, "us_aim7f_sparrow").unwrap();
+	let missile = Missile::select_by_name(&missiles, "su_r_23r").unwrap();
 
 	let results = generate(&missile, &LaunchParameter {
 		use_gravity: false,

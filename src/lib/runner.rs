@@ -144,13 +144,18 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 				engine_stage = "1";
 			}
 			_ => {
-				mass = missile.mass_end1;
+				if missile.mass_end1 != 0.0 {
+					mass = missile.mass_end1;
+				} else {
+					mass = missile.mass_end;
+				}
 				force = 0.0;
 				engine_stage = "-";
 			}
 		}
 
 		a = ((force - drag_force) / mass) - gravity;
+		println!("{}",  mass);
 
 
 		target_distance += target_velocity * timestep;
