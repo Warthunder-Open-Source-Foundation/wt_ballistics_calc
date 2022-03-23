@@ -155,7 +155,6 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		}
 
 		a = ((force - drag_force) / mass) - gravity;
-		println!("{}",  mass);
 
 
 		target_distance += target_velocity * timestep;
@@ -218,7 +217,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		println!("max distance reached: {}m", distance.round());
 	}
 
-	if launch_parameters.target_speed != 0.0 {
+	if launch_parameters.target_speed != 0.0 && debug {
 		println!("min missile - target: {}m", closest.round());
 	}
 
@@ -245,4 +244,31 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	// 		t_to_mach3: 0.0
 	// 	}
 	// }
+}
+
+#[cfg(test)]
+mod tests {
+	use std::fs;
+	use std::time::{Duration, Instant};
+	use wt_datamine_extractor_lib::missile::missile::Missile;
+	use crate::launch_parameters::LaunchParameter;
+	use crate::runner::generate;
+
+	const TIMESTEP: f64 = 0.1;
+
+	#[test]
+	fn test_runner_5s() {
+		let missiles: Vec<Missile> = serde_json::from_str(&std::fs::read_to_string("../wt_datamine_extractor/missile_index/all.json").unwrap()).unwrap();
+
+		let missile = Missile::select_by_name(&missiles, "su_r_23r").unwrap();
+
+		let mut results = [None; 5000];
+
+		let start = Instant::now();
+		for i in 0..5_000 {
+			results[i] = Some(generate(&missile, &LaunchParameter::new_from_default_hor(), TIMESTEP, false));
+		}
+		println!("{:?}", start.elapsed());
+		println!("{}", serde_json::to_string(&results.to_vec()).unwrap()[0..1].to_owned());
+	}
 }
