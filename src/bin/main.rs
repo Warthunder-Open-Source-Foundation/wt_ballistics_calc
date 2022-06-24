@@ -1,3 +1,4 @@
+use std::ops::Range;
 use std::time::Instant;
 
 use plotters::prelude::*;
@@ -11,23 +12,27 @@ const HEIGHT: u32 = 2160;
 
 const TIMESTEP: f64 = 0.1;
 
+// Scaling settings
 const FONT_AXIS: u32 = ((WIDTH + HEIGHT) / 2) as u32;
+const DIST_C: u32 = 100;
+const Y_RANGE: Range<f64> = -50.0..1040.0;
 
 fn main() {
 	let start = Instant::now();
 
 	let missiles: Vec<Missile> = serde_json::from_str(&std::fs::read_to_string("../wt_datamine_extractor/missile_index/all.json").unwrap()).unwrap();
 
-	let missile = Missile::select_by_name(&missiles, "su_r_23r").unwrap();
+	let missile = Missile::select_by_name(&missiles, "us_aim7f_sparrow").unwrap();
 
 	let results = generate(&missile, &LaunchParameter {
 		use_gravity: false,
 		start_velocity: 343.0,
 		distance_to_target: 0.0,
 		target_speed: 0.0,
-		altitude: 5000,
+		altitude: 7000,
 	}, TIMESTEP, false);
 	println!("{}", "Finished simulation");
+	dbg!(results.max_v);
 
 	let mut v_profile: Vec<(f32, f64)> = Vec::new();
 	for i in results.profile.v.clone().iter().enumerate() {
@@ -41,7 +46,7 @@ fn main() {
 
 	let mut d_profile: Vec<(f32, f64)> = Vec::new();
 	for i in results.profile.d.clone().iter().enumerate() {
-		d_profile.push((i.0 as f32, *i.1 / 10 as f64));
+		d_profile.push((i.0 as f32, *i.1 / DIST_C as f64));
 	}
 	println!("{}", "Calculated profiles");
 
@@ -65,7 +70,7 @@ fn main() {
 		.set_label_area_size(LabelAreaPosition::Left, FONT_AXIS / 50)
 		.caption(&format!("{}", &missile.localized), ("sans-serif", FONT_AXIS / 20))
 		// Finally attach a coordinate on the drawing area and make a chart context
-		.build_cartesian_2d(x_dim, -200.0..800.0).unwrap(); // Any y range >= 1000 breaks the tool
+		.build_cartesian_2d(x_dim, Y_RANGE).unwrap(); // Any y range >= 1000 breaks the tool
 
 	// Then we can draw a mesh
 	chart
@@ -103,13 +108,21 @@ fn main() {
 		d_profile,
 		&GREEN,
 	)).unwrap()
-		.label("Distance m / 10")
+		.label(format!("Distance m / {DIST_C}"))
 		.legend(|(x, y)| PathElement::new(vec![(x, y), (x + (WIDTH / 50) as i32, y)], &GREEN));
 
 	chart.draw_series(LineSeries::new(
 		vec![(0.0, 0.0), (WIDTH as f32 * TIMESTEP.powi(-1) as f32, 0.0)],
 		&BLACK,
 	)).unwrap();
+
+	// let mach_lines = for i in 1..(results.max_v / 343.0).ceil() as u32 {
+	// 	let target: f64 = (i * 343) as f64;
+	// 	chart.draw_series(LineSeries::new(
+	// 		vec![(0.0 as f32, target), (120000.0 as f32, target)],
+	// 		&RED,
+	// 	)).unwrap();
+	// };
 
 	// chart.draw_series(
 	// 	vec![(3.1_f32, 4.1)].iter().map(|point| TriangleMarker::new(*point, 5, &BLUE)),
