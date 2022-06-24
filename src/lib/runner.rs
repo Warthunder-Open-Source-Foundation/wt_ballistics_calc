@@ -155,8 +155,6 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		}
 
 		a = ((force - drag_force) / mass) - gravity;
-		println!("{}",  mass);
-
 
 		target_distance += target_velocity * timestep;
 		launch_distance += launch_velocity * timestep;
