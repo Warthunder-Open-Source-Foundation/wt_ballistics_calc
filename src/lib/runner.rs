@@ -7,36 +7,6 @@ use wt_datamine_extractor_lib::missile::missile::Missile;
 use crate::launch_parameters::LaunchParameter;
 use crate::rho::altitude_to_rho;
 
-pub fn input_launch_parameters(launch_parameters: &mut LaunchParameter) {
-	println!("Enter start/carrier aircraft velocity in m/s (mach 1 = 343m/s)");
-	let mut line = "".to_owned();
-	stdin()
-		.read_line(&mut line)
-		.expect("failed to read from stdin");
-	launch_parameters.start_velocity = line.trim().parse().unwrap();
-
-	println!("Enter distance to target aircraft in m (0 if no target required)");
-	let mut line = "".to_owned();
-	stdin()
-		.read_line(&mut line)
-		.expect("failed to read from stdin");
-	launch_parameters.distance_to_target = line.trim().parse().unwrap();
-
-	println!("Enter target velocity in m/s (mach 1 = 343m/s)");
-	let mut line = "".to_owned();
-	stdin()
-		.read_line(&mut line)
-		.expect("failed to read from stdin");
-	launch_parameters.target_speed = line.trim().parse().unwrap();
-
-	println!("Enter altitude to simulate in in m");
-	let mut line = "".to_owned();
-	stdin()
-		.read_line(&mut line)
-		.expect("failed to read from stdin");
-	launch_parameters.altitude = line.trim().parse().unwrap();
-}
-
 pub const GRAVITY_TO_ACCEL: f64 = 9.81;
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
@@ -65,7 +35,7 @@ pub struct Splash {
 	pub at: f64,
 }
 
-pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep: f64, debug: bool) -> LaunchResults {
+pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep: f64) -> LaunchResults {
 	let sim_len = (missile.timelife / timestep).round().abs() as u32;
 
 	let mut results: LaunchResults = LaunchResults {
@@ -93,8 +63,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	// IMPORTANT when changing altitude anywhere move this function too
 	let rho = altitude_to_rho(altitude.round() as u32);
 
-	#[allow(unused_variables)] // Clippy being retarded again
-		let mut launch_distance: f64 = 0.0;
+	let mut launch_distance: f64 = 0.0;
 
 	// Constants for calculations
 	// javascript moment
@@ -139,7 +108,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 				engine_stage = "0";
 			}
 			_ if burn_1.contains(&flight_time) => {
-				mass =  missile.mass_end - compute_delta_mass(missile.mass_end, missile.mass_end1, missile.timefire1, missile.timefire0);
+				mass = missile.mass_end - compute_delta_mass(missile.mass_end, missile.mass_end1, missile.timefire1, missile.timefire0);
 				force = missile.force1;
 				engine_stage = "1";
 			}
@@ -155,8 +124,6 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		}
 
 		a = ((force - drag_force) / mass) - gravity;
-		println!("{}",  mass);
-
 
 		target_distance += target_velocity * timestep;
 		launch_distance += launch_velocity * timestep;
@@ -187,39 +154,10 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		results.profile.v.push(velocity);
 		results.profile.d.push(distance);
 
-		if debug {
-			println!("ts(s): {} D(m): {} Dt(m): {} a(m/s²): {} v(m/s): {} d(N): {} rho: {} m(kg): {} s: {}",
-					 format!("{:.1}", (i as f64 * timestep)).to_string().pad_to_width(4),
-					 distance.round().to_string().pad_to_width(5),
-					 target_distance.round().to_string().pad_to_width(4),
-					 a.round().to_string().pad_to_width(3),
-					 velocity.round().to_string().pad_to_width(4),
-					 drag_force.round().to_string().pad_to_width(5),
-					 rho.to_string()[..6].pad_to_width(4),
-					 mass.to_string()[..5].pad_to_width(5),
-					 engine_stage.pad_to_width(1),
-			);
-		}
-
 		if target_distance != 0.0 && target_distance < distance {
 			splash.splash = true;
 			splash.at = target_distance - launch_distance;
 		}
-
-		// if target_distance != 0.0 && target_distance < distance {
-		// 	println!("Splash at {}m! The target is {}m from the launch aircraft after {}s of flight time", target_distance, target_distance - launch_distance, i as f64 * timestep);
-		// 	break;
-		// }
-	}
-
-	if debug {
-		// println!("Simulation took: {:?}", start.elapsed());
-		println!("max velocity: {}m/s", max_v.round());
-		println!("max distance reached: {}m", distance.round());
-	}
-
-	if launch_parameters.target_speed != 0.0 {
-		println!("min missile - target: {}m", closest.round());
 	}
 
 	results.distance_flown = distance;
@@ -231,17 +169,4 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 
 
 	results
-
-	// LaunchResults {
-	// 	distance_flown: distance,
-	// 	distance_to_missile: launch_plane_distance,
-	// 	splash: splash,
-	// 	max_v,
-	// 	max_a,
-	// 	t_to_target: TimeToTarget {
-	// 		t_to_1km: 0.0,
-	// 		t_to_2km: 0.0,
-	// 		t_to_mach2: 0.0,
-	// 		t_to_mach3: 0.0
-	// 	}
-	}
+}
