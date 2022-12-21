@@ -1,11 +1,9 @@
 use std::f64::consts::PI;
-use std::io::stdin;
 
-use pad::PadStr;
 use wt_datamine_extractor_lib::missile::missile::Missile;
 
 use crate::launch_parameters::LaunchParameter;
-use crate::rho::altitude_to_rho;
+use crate::rho::altitude_to_rho_constant;
 
 pub const GRAVITY_TO_ACCEL: f64 = 9.81;
 
@@ -35,7 +33,9 @@ pub struct Splash {
 	pub at: f64,
 }
 
+#[must_use]
 pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep: f64) -> LaunchResults {
+	#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
 	let sim_len = (missile.timelife / timestep).round().abs() as u32;
 
 	let mut results: LaunchResults = LaunchResults {
@@ -57,18 +57,18 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	let mut a: f64;
 	let mut velocity: f64 = launch_parameters.start_velocity;
 	let mut distance: f64 = 0.0;
-	let altitude: f64 = launch_parameters.altitude as f64;
+	let altitude = launch_parameters.altitude;
 	let mut launch_plane_distance: f64 = 0.0;
 
 	// IMPORTANT when changing altitude anywhere move this function too
-	let rho = altitude_to_rho(altitude.round() as u32);
+	let rho = altitude_to_rho_constant(altitude);
 
 	let mut launch_distance: f64 = 0.0;
 
 	// Constants for calculations
 	// javascript moment
 	#[allow(clippy::cast_precision_loss)] // save cast thanks to gravity being normal
-		let gravity = GRAVITY_TO_ACCEL * launch_parameters.use_gravity as u64 as f64;
+		let gravity = GRAVITY_TO_ACCEL * u64::from(launch_parameters.use_gravity) as f64;
 	let area = PI * (missile.caliber / 2.0).powi(2);
 	let launch_velocity = velocity;
 
@@ -89,7 +89,6 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		drag_force = 0.5 * rho * velocity.powi(2) * missile.cxk * area;
 
 
-		let engine_stage;
 		let mass;
 		let force;
 
@@ -98,28 +97,27 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 
 		let flight_time = f64::from(i) * timestep;
 		let compute_delta_mass = |mass, mass_end, timefire, relative_time| {
-			((mass - mass_end) * ((flight_time - relative_time) / timefire))
+			(mass - mass_end) * ((flight_time - relative_time) / timefire)
 		};
 
 		match () {
 			_ if burn_0.contains(&flight_time) => {
 				mass = missile.mass - compute_delta_mass(missile.mass, missile.mass_end, missile.timefire0, 0.0);
 				force = missile.force0;
-				engine_stage = "0";
 			}
 			_ if burn_1.contains(&flight_time) => {
 				mass = missile.mass_end - compute_delta_mass(missile.mass_end, missile.mass_end1, missile.timefire1, missile.timefire0);
 				force = missile.force1;
-				engine_stage = "1";
 			}
 			_ => {
-				if missile.mass_end1 != 0.0 {
-					mass = missile.mass_end1;
-				} else {
+				if missile.mass_end1 == 0.0 {
 					mass = missile.mass_end;
+
+				} else {
+					mass = missile.mass_end1;
+
 				}
 				force = 0.0;
-				engine_stage = "-";
 			}
 		}
 

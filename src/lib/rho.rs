@@ -1,5 +1,6 @@
-pub fn altitude_to_rho(altitude: u32) -> f64 {
-	return 3.0099_f64 - (0.868106 * ((0.0014659 * altitude as f64) + 7.88959).ln());
+#[must_use]
+pub fn altitude_to_rho_constant(altitude: u32) -> f64 {
+	3.0099_f64 - (0.868_106 * ((0.001_465_9 * f64::from(altitude)) + 7.88959).ln())
 
 	// 3.0099 - 0.868106 ln (0.0014659x + 7.88959)
 	// static CONSTANTS: [(u32, f64); 21] = [
@@ -33,6 +34,6 @@ mod tests {
 
 	#[test]
 	fn rho() {
-		println!("{}", altitude_to_rho(10000));
+		println!("{}", altitude_to_rho_constant(10000));
 	}
 }

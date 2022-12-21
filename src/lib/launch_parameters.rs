@@ -8,6 +8,7 @@ pub struct LaunchParameter {
 }
 
 impl LaunchParameter {
+	#[must_use]
 	pub fn new_from_parameters(use_gravity: bool, start_velocity: f64, distance_to_target: f64, target_speed: f64, altitude: u32) -> Self {
 		Self {
 			use_gravity,
@@ -17,6 +18,7 @@ impl LaunchParameter {
 			altitude,
 		}
 	}
+	#[must_use]
 	pub fn new_from_default_hor() -> Self {
 		Self {
 			use_gravity: false,
