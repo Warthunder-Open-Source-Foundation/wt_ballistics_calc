@@ -37,7 +37,7 @@ pub fn input_launch_parameters(launch_parameters: &mut LaunchParameter) {
 	launch_parameters.altitude = line.trim().parse().unwrap();
 }
 
-const GRAVITY: f64 = 9.81;
+pub const GRAVITY_TO_ACCEL: f64 = 9.81;
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
 pub struct LaunchResults {
@@ -99,7 +99,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	// Constants for calculations
 	// javascript moment
 	#[allow(clippy::cast_precision_loss)] // save cast thanks to gravity being normal
-		let gravity = GRAVITY * launch_parameters.use_gravity as u64 as f64;
+		let gravity = GRAVITY_TO_ACCEL * launch_parameters.use_gravity as u64 as f64;
 	let area = PI * (missile.caliber / 2.0).powi(2);
 	let launch_velocity = velocity;
 
@@ -244,5 +244,4 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	// 		t_to_mach2: 0.0,
 	// 		t_to_mach3: 0.0
 	// 	}
-	// }
-}
+	}
