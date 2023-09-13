@@ -31,7 +31,7 @@ pub enum EngineStage {
 
 impl Display for EngineStage {
 	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		write!(f,"{}",
+		write!(f, "{}",
 			   match self {
 				   Running { level } => {
 					   level.to_string()
@@ -68,7 +68,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		max_a: 0.0,
 		min_a: 0.0,
 		timestep,
-		profile: Profile { sim_len, a: vec![], v: vec![], d: vec![] },
+		profile: Profile { sim_len, a: Vec::with_capacity(sim_len as usize), v: Vec::with_capacity(sim_len as usize), d: Vec::with_capacity(sim_len as usize) },
 	};
 
 
@@ -85,13 +85,9 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	// IMPORTANT when changing altitude anywhere move this function too
 	let rho = altitude_to_rho(altitude.round() as u32);
 
-	#[allow(unused_variables)] // Clippy being retarded again
-		let mut launch_distance: f64 = 0.0;
+	let mut launch_distance: f64 = 0.0;
 
-	// Constants for calculations
-	// javascript moment
-	#[allow(clippy::cast_precision_loss)] // save cast thanks to gravity being normal
-		let gravity = GRAVITY * launch_parameters.use_gravity as u64 as f64;
+	let gravity = GRAVITY * if launch_parameters.use_gravity { 1.0 } else { 0.0 };
 	let area = PI * (missile.caliber / 2.0).powi(2);
 	let launch_velocity = velocity;
 
@@ -128,12 +124,12 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 			_ if burn_0.contains(&flight_time) => {
 				mass = missile.mass - compute_delta_mass(missile.mass, missile.mass_end, missile.timefire0, 0.0);
 				force = missile.force0;
-				engine_stage = Running {level: 0};
+				engine_stage = Running { level: 0 };
 			}
 			_ if burn_1.contains(&flight_time) => {
-				mass =  missile.mass_end - compute_delta_mass(missile.mass_end, missile.mass_end1, missile.timefire1, missile.timefire0);
+				mass = missile.mass_end - compute_delta_mass(missile.mass_end, missile.mass_end1, missile.timefire1, missile.timefire0);
 				force = missile.force1;
-				engine_stage = Running {level: 1};
+				engine_stage = Running { level: 1 };
 			}
 			_ => {
 				if missile.mass_end1 != 0.0 {
