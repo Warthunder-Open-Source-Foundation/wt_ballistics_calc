@@ -1,3 +1,5 @@
+
+#[inline(always)]
 pub fn altitude_to_rho(altitude: u32) -> f64 {
 	return 3.0099_f64 - (0.868106 * ((0.0014659 * altitude as f64) + 7.88959).ln());
 
