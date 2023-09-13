@@ -1,10 +1,12 @@
 use std::f64::consts::PI;
+use std::fmt::{Display, Formatter};
 
 use pad::PadStr;
 use wt_datamine_extractor_lib::missile::missile::Missile;
 
 use crate::launch_parameters::LaunchParameter;
 use crate::rho::altitude_to_rho;
+use crate::runner::EngineStage::{BurntOut, Running};
 
 const GRAVITY: f64 = 9.81;
 
@@ -18,6 +20,27 @@ pub struct LaunchResults {
 	pub min_a: f64,
 	pub timestep: f64,
 	pub profile: Profile,
+}
+
+pub enum EngineStage {
+	Running {
+		level: u8,
+	},
+	BurntOut,
+}
+
+impl Display for EngineStage {
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		write!(f,"{}",
+			   match self {
+				   Running { level } => {
+					   level.to_string()
+				   }
+				   BurntOut => {
+					   "-".to_string()
+				   }
+			   })
+	}
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
@@ -89,7 +112,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		drag_force = 0.5 * rho * velocity.powi(2) * missile.cxk * area;
 
 
-		let engine_stage;
+		let engine_stage: EngineStage;
 		let mass;
 		let force;
 
@@ -105,12 +128,12 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 			_ if burn_0.contains(&flight_time) => {
 				mass = missile.mass - compute_delta_mass(missile.mass, missile.mass_end, missile.timefire0, 0.0);
 				force = missile.force0;
-				engine_stage = "0";
+				engine_stage = Running {level: 0};
 			}
 			_ if burn_1.contains(&flight_time) => {
 				mass =  missile.mass_end - compute_delta_mass(missile.mass_end, missile.mass_end1, missile.timefire1, missile.timefire0);
 				force = missile.force1;
-				engine_stage = "1";
+				engine_stage = Running {level: 1};
 			}
 			_ => {
 				if missile.mass_end1 != 0.0 {
@@ -119,7 +142,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 					mass = missile.mass_end;
 				}
 				force = 0.0;
-				engine_stage = "-";
+				engine_stage = BurntOut;
 			}
 		}
 
@@ -164,7 +187,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 					 drag_force.round().to_string().pad_to_width(5),
 					 rho.to_string()[..6].pad_to_width(4),
 					 mass.to_string()[..5].pad_to_width(5),
-					 engine_stage.pad_to_width(1),
+					 engine_stage.to_string().pad_to_width(1),
 			);
 		}
 
