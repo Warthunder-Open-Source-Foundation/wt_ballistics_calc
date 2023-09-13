@@ -1,41 +1,10 @@
 use std::f64::consts::PI;
-use std::io::stdin;
 
 use pad::PadStr;
 use wt_datamine_extractor_lib::missile::missile::Missile;
 
 use crate::launch_parameters::LaunchParameter;
 use crate::rho::altitude_to_rho;
-
-pub fn input_launch_parameters(launch_parameters: &mut LaunchParameter) {
-	println!("Enter start/carrier aircraft velocity in m/s (mach 1 = 343m/s)");
-	let mut line = "".to_owned();
-	stdin()
-		.read_line(&mut line)
-		.expect("failed to read from stdin");
-	launch_parameters.start_velocity = line.trim().parse().unwrap();
-
-	println!("Enter distance to target aircraft in m (0 if no target required)");
-	let mut line = "".to_owned();
-	stdin()
-		.read_line(&mut line)
-		.expect("failed to read from stdin");
-	launch_parameters.distance_to_target = line.trim().parse().unwrap();
-
-	println!("Enter target velocity in m/s (mach 1 = 343m/s)");
-	let mut line = "".to_owned();
-	stdin()
-		.read_line(&mut line)
-		.expect("failed to read from stdin");
-	launch_parameters.target_speed = line.trim().parse().unwrap();
-
-	println!("Enter altitude to simulate in in m");
-	let mut line = "".to_owned();
-	stdin()
-		.read_line(&mut line)
-		.expect("failed to read from stdin");
-	launch_parameters.altitude = line.trim().parse().unwrap();
-}
 
 const GRAVITY: f64 = 9.81;
 
@@ -129,7 +98,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 
 		let flight_time = f64::from(i) * timestep;
 		let compute_delta_mass = |mass, mass_end, timefire, relative_time| {
-			((mass - mass_end) * ((flight_time - relative_time) / timefire))
+			(mass - mass_end) * ((flight_time - relative_time) / timefire)
 		};
 
 		match () {

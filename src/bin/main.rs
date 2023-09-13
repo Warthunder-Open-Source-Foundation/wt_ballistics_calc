@@ -1,3 +1,4 @@
+use std::io::stdin;
 use std::ops::Range;
 use std::time::Instant;
 
@@ -136,4 +137,34 @@ fn main() {
 		.draw().unwrap();
 
 	println!("{:?}", start.elapsed());
+}
+
+pub fn input_launch_parameters(launch_parameters: &mut LaunchParameter) {
+	println!("Enter start/carrier aircraft velocity in m/s (mach 1 = 343m/s)");
+	let mut line = "".to_owned();
+	stdin()
+		.read_line(&mut line)
+		.expect("failed to read from stdin");
+	launch_parameters.start_velocity = line.trim().parse().unwrap();
+
+	println!("Enter distance to target aircraft in m (0 if no target required)");
+	let mut line = "".to_owned();
+	stdin()
+		.read_line(&mut line)
+		.expect("failed to read from stdin");
+	launch_parameters.distance_to_target = line.trim().parse().unwrap();
+
+	println!("Enter target velocity in m/s (mach 1 = 343m/s)");
+	let mut line = "".to_owned();
+	stdin()
+		.read_line(&mut line)
+		.expect("failed to read from stdin");
+	launch_parameters.target_speed = line.trim().parse().unwrap();
+
+	println!("Enter altitude to simulate in in m");
+	let mut line = "".to_owned();
+	stdin()
+		.read_line(&mut line)
+		.expect("failed to read from stdin");
+	launch_parameters.altitude = line.trim().parse().unwrap();
 }
