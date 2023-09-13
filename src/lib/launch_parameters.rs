@@ -1,4 +1,4 @@
-#[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
+#[derive(Copy, serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
 pub struct LaunchParameter {
 	pub use_gravity: bool,
 	pub start_velocity: f64,

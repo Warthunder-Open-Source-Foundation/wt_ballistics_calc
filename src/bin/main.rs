@@ -25,13 +25,14 @@ fn main() {
 
 	let missile = Missile::select_by_name(&missiles, "us_aim7f_sparrow").unwrap();
 
-	let results = generate(&missile, &LaunchParameter {
+	let params = LaunchParameter {
 		use_gravity: false,
 		start_velocity: 343.0,
 		distance_to_target: 0.0,
 		target_speed: 0.0,
 		altitude: 7000,
-	}, TIMESTEP, false);
+	};
+	let results = generate(&missile, params, TIMESTEP, false);
 	println!("{}", "Finished simulation");
 	dbg!(results.max_v);
 
@@ -137,6 +138,7 @@ fn main() {
 		.draw().unwrap();
 
 	println!("{:?}", start.elapsed());
+	let _zip = results.as_csv(None).unwrap();
 }
 
 pub fn input_launch_parameters(launch_parameters: &mut LaunchParameter) {

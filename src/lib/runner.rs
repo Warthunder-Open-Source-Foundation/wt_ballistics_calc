@@ -19,7 +19,9 @@ pub struct LaunchResults {
 	pub max_a: f64,
 	pub min_a: f64,
 	pub timestep: f64,
+	#[serde(skip_serializing)]
 	pub profile: Profile,
+	pub parameters: LaunchParameter,
 }
 
 pub enum EngineStage {
@@ -57,7 +59,7 @@ pub struct Splash {
 	pub at: f64,
 }
 
-pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep: f64, debug: bool) -> LaunchResults {
+pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep: f64, debug: bool) -> LaunchResults {
 	let sim_len = (missile.timelife / timestep).round().abs() as u32;
 
 	let mut results: LaunchResults = LaunchResults {
@@ -69,6 +71,7 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		min_a: 0.0,
 		timestep,
 		profile: Profile { sim_len, a: Vec::with_capacity(sim_len as usize), v: Vec::with_capacity(sim_len as usize), d: Vec::with_capacity(sim_len as usize) },
+		parameters: launch_parameters,
 	};
 
 
