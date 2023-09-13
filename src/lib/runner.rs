@@ -102,14 +102,17 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 	let mut min_a = 0.0;
 	let mut splash: Splash = Splash { splash: false, at: 0.0 };
 
-	// Save allow thanks to abs() and never overflowing value thanks to division beforehand
-	#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 	for i in 0..sim_len {
 		drag_force = 0.5 * rho * velocity.powi(2) * missile.cxk * area;
 
 
+		// Current engine stage
 		let engine_stage: EngineStage;
+
+		// Current mass of missile
 		let mass;
+
+		// Sum of forces applied to missile
 		let force;
 
 		let burn_0 = 0.0..missile.timefire0;
@@ -121,16 +124,19 @@ pub fn generate(missile: &Missile, launch_parameters: &LaunchParameter, timestep
 		};
 
 		match () {
+			// Booster stage
 			_ if burn_0.contains(&flight_time) => {
 				mass = missile.mass - compute_delta_mass(missile.mass, missile.mass_end, missile.timefire0, 0.0);
 				force = missile.force0;
 				engine_stage = Running { level: 0 };
 			}
+			// Sustainer stage
 			_ if burn_1.contains(&flight_time) => {
 				mass = missile.mass_end - compute_delta_mass(missile.mass_end, missile.mass_end1, missile.timefire1, missile.timefire0);
 				force = missile.force1;
 				engine_stage = Running { level: 1 };
 			}
+			// Coasting
 			_ => {
 				if missile.mass_end1 != 0.0 {
 					mass = missile.mass_end1;
