@@ -31,7 +31,7 @@ impl LaunchResults {
 
 		zip.start_file("plot.csv", FileOptions::default().compression_method(CompressionMethod::Stored)).ok()?;
 
-		let mut csv = format!("acceleration;velocity;distance_traveled");
+		let mut csv = format!("acceleration;velocity;distance_traveled\n");
 
 		let profile = &self.profile;
 		let a = &profile.a;
