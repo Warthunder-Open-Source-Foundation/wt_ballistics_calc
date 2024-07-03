@@ -1,6 +1,6 @@
 use std::io::{Cursor, Write};
 use wt_datamine_extractor_lib::missile::missile::Missile;
-use zip::CompressionMethod;
+use zip::{CompressionMethod, ZipWriter};
 use zip::write::FileOptions;
 use crate::runner::LaunchResults;
 
@@ -9,11 +9,28 @@ use crate::runner::LaunchResults;
 impl LaunchResults {
 	// Returns zipped files containing results
 	pub fn as_csv(&self, plot: Option<&[u8]>, missile: Missile) -> Option<Vec<u8>> {
-		let out = Cursor::new(vec![]);
-		let mut zip = zip::ZipWriter::new(out);
+		let zip = self.start_csv(plot, missile);
+		Self::finish_zip(zip)
+	}
+
+	pub fn start_csv(&self,  plot: Option<&[u8]>, missile: Missile) -> MissileZipWriter {
+		let out= Cursor::new(vec![]);
+		let mut zip = ZipWriter::new(out);
+		self.write_into_zip(plot, missile, &mut zip);
+		zip
+	}
+
+	pub fn finish_zip( zip: MissileZipWriter) -> Option<Vec<u8>> {
+		Some(zip.finish().ok()?.into_inner())
+	}
+
+	pub fn write_into_zip(&self, plot: Option<&[u8]>, missile: Missile, zip: &mut MissileZipWriter) -> Option<()> {
+		let options: FileOptions<()> = FileOptions::default().compression_method(CompressionMethod::Stored);
+		let fname = |f| format!("{}/{f}", missile.name);
+		zip.add_directory(fname(""), options).ok()?;
 
 		let params_toml = toml::to_string(&self).ok()?;
-		zip.start_file("launch_parameters.toml", FileOptions::default().compression_method(CompressionMethod::Stored)).ok()?;
+		zip.start_file(fname("launch_parameters.toml"), options).ok()?;
 		zip.write_all(
 			format!(
 				"# wt_ballistics_cal commit-hash: {} \n# Repository: {}\n",
@@ -25,11 +42,11 @@ impl LaunchResults {
 		zip.write_all(params_toml.as_bytes()).ok()?;
 
 		if let Some(plot) = plot {
-			zip.start_file("data_plot.png", FileOptions::default().compression_method(CompressionMethod::Stored)).ok()?;
+			zip.start_file(fname("data_plot.png"), options).ok()?;
 			zip.write_all(plot).ok()?;
 		}
 
-		zip.start_file("plot.csv", FileOptions::default().compression_method(CompressionMethod::Stored)).ok()?;
+		zip.start_file(fname("plot.csv"), options).ok()?;
 
 		let mut csv = format!("acceleration;velocity;distance_traveled;turn_radius\n");
 
@@ -44,8 +61,9 @@ impl LaunchResults {
 			csv.push_str(&format!("{a};{v};{d};{}\n", turning_radius(*v)));
 		}
 		zip.write_all(csv.as_bytes()).ok()?;
-
-
-		Some(zip.finish().ok()?.into_inner())
+		Some(())
 	}
 }
+
+
+pub type MissileZipWriter = ZipWriter<Cursor<Vec<u8>>>;
