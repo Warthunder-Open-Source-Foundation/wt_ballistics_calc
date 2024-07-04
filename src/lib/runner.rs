@@ -5,7 +5,7 @@ use pad::PadStr;
 use wt_datamine_extractor_lib::missile::missile::Missile;
 
 use crate::launch_parameters::LaunchParameter;
-use crate::rho::altitude_to_rho;
+use crate::atmosphere::altitude_to_rho;
 use crate::runner::EngineStage::{BurntOut, Running};
 
 const GRAVITY: f64 = 9.81;
