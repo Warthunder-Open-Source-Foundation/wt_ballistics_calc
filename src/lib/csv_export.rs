@@ -1,4 +1,5 @@
 use std::io::{Cursor, Write};
+use simple_si_units::mechanical::Velocity;
 use wt_datamine_extractor_lib::missile::missile::Missile;
 use zip::{CompressionMethod, ZipWriter};
 use zip::write::FileOptions;
@@ -50,8 +51,8 @@ impl LaunchResults {
 
 		let mut csv = format!("acceleration;velocity;distance_traveled;turn_radius\n");
 
-		let turning_radius = |velocity: f64| {
-			velocity.powi(2) / missile.reqaccelmax
+		let turning_radius = |velocity: Velocity<f64>| {
+			velocity.to_mps().powi(2) / missile.reqaccelmax
 		};
 		let profile = &self.profile;
 		let a = &profile.a;

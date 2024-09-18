@@ -2,6 +2,8 @@ use std::f64::consts::PI;
 use std::fmt::{Display, Formatter};
 
 use pad::PadStr;
+use simple_si_units::base::{Distance, Mass};
+use simple_si_units::mechanical::{Acceleration, Force, Velocity};
 use wt_datamine_extractor_lib::missile::missile::Missile;
 
 use crate::launch_parameters::LaunchParameter;
@@ -12,12 +14,12 @@ const GRAVITY: f64 = 9.81;
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
 pub struct LaunchResults {
-	pub distance_flown: f64,
-	pub distance_to_missile: f64,
+	pub distance_flown: Distance<f64>,
+	pub distance_to_missile: Distance<f64>,
 	pub splash: Splash,
-	pub max_v: f64,
-	pub max_a: f64,
-	pub min_a: f64,
+	pub max_v: Velocity<f64>,
+	pub max_a: Acceleration<f64>,
+	pub min_a: Acceleration<f64>,
 	pub timestep: f64,
 	#[serde(skip_serializing)]
 	pub profile: Profile,
@@ -48,27 +50,27 @@ impl Display for EngineStage {
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone)]
 pub struct Profile {
 	pub sim_len: u32,
-	pub a: Vec<f64>,
-	pub v: Vec<f64>,
-	pub d: Vec<f64>,
+	pub a: Vec<Acceleration<f64>>,
+	pub v: Vec<Velocity<f64>>,
+	pub d: Vec<Distance<f64>>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq, Clone, Copy)]
 pub struct Splash {
 	pub splash: bool,
-	pub at: f64,
+	pub at: Distance<f64>,
 }
 
 pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep: f64, debug: bool) -> LaunchResults {
 	let sim_len = (missile.timelife / timestep).round().abs() as u32;
 
 	let mut results: LaunchResults = LaunchResults {
-		distance_flown: 0.0,
-		distance_to_missile: 0.0,
-		splash: Splash { splash: false, at: 0.0 },
-		max_v: 0.0,
-		max_a: 0.0,
-		min_a: 0.0,
+		distance_flown: Distance::from_m(0.0),
+		distance_to_missile: Distance::from_m(0.0),
+		splash: Splash { splash: false, at: Distance::from_m(0.0) },
+		max_v: Velocity::from_mps(0.0),
+		max_a: Acceleration::from_mps2(0.0),
+		min_a: Acceleration::from_mps2(0.0),
 		timestep,
 		profile: Profile { sim_len, a: Vec::with_capacity(sim_len as usize), v: Vec::with_capacity(sim_len as usize), d: Vec::with_capacity(sim_len as usize) },
 		parameters: launch_parameters,
@@ -78,19 +80,19 @@ pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep:
 	// let start = Instant::now();
 
 	// State parameters
-	let mut drag_force: f64;
-	let mut a: f64;
-	let mut velocity: f64 = launch_parameters.start_velocity;
-	let mut distance: f64 = 0.0;
-	let altitude: f64 = launch_parameters.altitude as f64;
-	let mut launch_plane_distance: f64 = 0.0;
+	let mut drag_force: Force<f64>;
+	let mut a: Acceleration<f64>;
+	let mut velocity = launch_parameters.start_velocity;
+	let mut distance = Distance::from_m(0.0);
+	let altitude = launch_parameters.altitude;
+	let mut launch_plane_distance = Distance::from_m(0.0);
 
 	// IMPORTANT when changing altitude anywhere move this function too
-	let rho = altitude_to_rho(altitude.round() as u32);
+	let rho = altitude_to_rho(altitude);
 
-	let mut launch_distance: f64 = 0.0;
+	let mut launch_distance = Distance::from_m(0.0);
 
-	let gravity = GRAVITY * if launch_parameters.use_gravity { 1.0 } else { 0.0 };
+	let gravity = Acceleration::from_mps2(GRAVITY * if launch_parameters.use_gravity { 1.0 } else { 0.0 });
 	let area = PI * (missile.caliber / 2.0).powi(2);
 	let launch_velocity = velocity;
 
@@ -99,67 +101,67 @@ pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep:
 	let mut target_distance = launch_parameters.distance_to_target;
 
 	// Statistical values
-	let mut closest = f64::MAX;
-	let mut max_v = 0.0;
-	let mut max_a = 0.0;
-	let mut min_a = 0.0;
-	let mut splash: Splash = Splash { splash: false, at: 0.0 };
+	let mut closest = Distance::from_m(f64::MAX);
+	let mut max_v = Velocity::from_mps(0.0);
+	let mut max_a = Acceleration::from_mps2(0.0);
+	let mut min_a = Acceleration::from_mps2(0.0);
+	let mut splash: Splash = Splash { splash: false, at: Distance::from_m(0.0)};
 
 	for i in 0..sim_len {
-		drag_force = 0.5 * rho * velocity.powi(2) * missile.cxk * area;
+		drag_force = Force::from_N(0.5 * rho * velocity.to_mps().powi(2) * missile.cxk * area);
 
 
 		// Current engine stage
 		let engine_stage: EngineStage;
 
 		// Current mass of missile
-		let mass;
+		let mass: Mass<f64>;
 
 		// Sum of forces applied to missile
-		let force;
+		let force: Force<f64>;
 
 		let burn_0 = 0.0..missile.timefire0;
 		let burn_1 = burn_0.end..burn_0.end + missile.timefire1;
 
 		let flight_time = f64::from(i) * timestep;
 		let compute_delta_mass = |mass, mass_end, timefire, relative_time| {
-			(mass - mass_end) * ((flight_time - relative_time) / timefire)
+			Mass::from_kg((mass - mass_end) * ((flight_time - relative_time) / timefire))
 		};
 
 		match () {
 			// Booster stage
 			_ if burn_0.contains(&flight_time) => {
-				mass = missile.mass - compute_delta_mass(missile.mass, missile.mass_end, missile.timefire0, 0.0);
-				force = missile.force0;
+				mass = Mass::from_kg(missile.mass) - compute_delta_mass(missile.mass, missile.mass_end, missile.timefire0, 0.0);
+				force = Force::from_N(missile.force0);
 				engine_stage = Running { level: 0 };
 			}
 			// Sustainer stage
 			_ if burn_1.contains(&flight_time) => {
-				mass = missile.mass_end - compute_delta_mass(missile.mass_end, missile.mass_end1, missile.timefire1, missile.timefire0);
-				force = missile.force1;
+				mass = Mass::from_kg(missile.mass_end) - compute_delta_mass(missile.mass_end, missile.mass_end1, missile.timefire1, missile.timefire0);
+				force = Force::from_N(missile.force1);
 				engine_stage = Running { level: 1 };
 			}
 			// Coasting
 			_ => {
 				if missile.mass_end1 != 0.0 {
-					mass = missile.mass_end1;
+					mass = Mass::from_kg(missile.mass_end1);
 				} else {
-					mass = missile.mass_end;
+					mass = Mass::from_kg(missile.mass_end);
 				}
-				force = 0.0;
+				force = Force::from_N(0.0);
 				engine_stage = BurntOut;
 			}
 		}
 
 		a = ((force - drag_force) / mass) - gravity;
 
-		target_distance += target_velocity * timestep;
-		launch_distance += launch_velocity * timestep;
-		launch_plane_distance += launch_parameters.start_velocity * timestep;
+		target_distance += Distance::from_m(target_velocity.to_mps()) * timestep;
+		launch_distance += Distance::from_m(launch_velocity.to_mps()) * timestep;
+		launch_plane_distance += Distance::from_m(launch_parameters.start_velocity.to_mps()) * timestep;
 
 
-		velocity += a * timestep;
-		distance += velocity * timestep;
+		velocity += Velocity::from_mps(a.to_mps2()) * timestep;
+		distance += Distance::from_m(velocity.to_mps()) * timestep;
 
 
 		if velocity > max_v {
@@ -185,18 +187,18 @@ pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep:
 		if debug {
 			println!("ts(s): {} D(m): {} Dt(m): {} a(m/s²): {} v(m/s): {} d(N): {} rho: {} m(kg): {} s: {}",
 					 format!("{:.1}", (i as f64 * timestep)).to_string().pad_to_width(4),
-					 distance.round().to_string().pad_to_width(5),
-					 target_distance.round().to_string().pad_to_width(4),
-					 a.round().to_string().pad_to_width(3),
-					 velocity.round().to_string().pad_to_width(4),
-					 drag_force.round().to_string().pad_to_width(5),
+					 distance.to_meters().round().to_string().pad_to_width(5),
+					 target_distance.to_meters().round().to_string().pad_to_width(4),
+					 a.to_mps2().round().to_string().pad_to_width(3),
+					 velocity.to_mps().round().to_string().pad_to_width(4),
+					 drag_force.to_N().round().to_string().pad_to_width(5),
 					 rho.to_string()[..6].pad_to_width(4),
 					 mass.to_string()[..5].pad_to_width(5),
 					 engine_stage.to_string().pad_to_width(1),
 			);
 		}
 
-		if target_distance != 0.0 && target_distance < distance {
+		if target_distance != Distance::from_m(0.0) && target_distance < distance {
 			splash.splash = true;
 			splash.at = target_distance - launch_distance;
 		}
@@ -209,12 +211,12 @@ pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep:
 
 	if debug {
 		// println!("Simulation took: {:?}", start.elapsed());
-		println!("max velocity: {}m/s", max_v.round());
-		println!("max distance reached: {}m", distance.round());
+		println!("max velocity: {}m/s", max_v.to_mps().round());
+		println!("max distance reached: {}m", distance.to_meters().round());
 	}
 
-	if launch_parameters.target_speed != 0.0 {
-		println!("min missile - target: {}m", closest.round());
+	if launch_parameters.target_speed != Velocity::from_mps(0.0) {
+		println!("min missile - target: {}m", closest.to_meters().round());
 	}
 
 	results.distance_flown = distance;

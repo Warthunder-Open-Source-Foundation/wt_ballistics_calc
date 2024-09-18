@@ -1,27 +1,28 @@
 use std::cmp::{Ordering};
+use simple_si_units::base::Distance;
 
 /// Implemented according to https://github.com/GaijinEntertainment/DagorEngine/blob/main/prog/gameLibs/gamePhys/props/atmosphere.cpp
 
 
 // Public API with proper name
-pub fn altitude_to_rho(altitude: u32) -> f64 {
-	Atmosphere::new(760.0, 18.0).density(altitude)
+pub fn altitude_to_rho(altitude: Distance<f64>) -> f64 {
+	Atmosphere::new(760.0, 18.0).density(altitude.to_meters())
 }
 
 #[cfg(test)]
 mod tests {
+	use simple_si_units::base::Distance;
 	use super::*;
 
 	#[test]
 	fn rho() {
-		println!("{}", altitude_to_rho(10000));
+		println!("{}", altitude_to_rho(Distance::from_km(10.0)));
 	}
 
 	#[test]
 	fn test_parts() {
-		[0,1,2,3,5,8,10,12,15,20].iter()
-			.map(|e|e * 1000)
-			.map(|e|(e, altitude_to_rho(e)))
+		[0,1,2,3,5,8,10,12,15,20].into_iter()
+			.map(|e|(e, altitude_to_rho(Distance::from_km(e as _))))
 			.for_each(|(a, e)|eprintln!("alt:{a}m {e:.3}"))
 	}
 }
@@ -75,32 +76,32 @@ impl Atmosphere {
 	}
 
 	/// Get Pressure( H [meters] ) , [ Pa ]
-	pub fn pressure(&self, h: u32) -> f64 {
+	pub fn pressure(&self, h: f64) -> f64 {
 		self.pressure * compute_polynomial(PRESSURE, min(h as _, H_MAX)) * (H_MAX / max(H_MAX, h as _))
 	}
 
 	/// Get Temperature( H [meters] ) , [ K ]
-	pub fn temperature(&self, h: u32) -> f64 {
+	pub fn temperature(&self, h: f64) -> f64 {
 		self.temperature * compute_polynomial(TEMPARATURE, min(h as _, H_MAX))
 	}
 
 	/// Get Sonic Speed( H [meters] ) , [ m/s ]
-	pub fn sonic_speed(&self, h: u32) -> f64 {
+	pub fn sonic_speed(&self, h: f64) -> f64 {
 		20.1 * self.temperature(h).sqrt()
 	}
 
 	/// Get Density( H [meters] ) [kg*sec²/m⁴]
-	pub fn density(&self, h: u32) -> f64 {
+	pub fn density(&self, h: f64) -> f64 {
 		self.calc_density() * compute_polynomial(DENSITY, min(h as _, H_MAX)) * (H_MAX / max(H_MAX, h as _))
 	}
 
 	/// Get {Dynamic Turbulent} viscosity( H [meters] ) , [ Pa*sec ]
-	pub fn viscosity(&self, h: u32) -> f64 {
+	pub fn viscosity(&self, h: f64) -> f64 {
 		MU0 * (self.temperature(h) / self.temperature).powf(0.76)
 	}
 
 	/// Get Kinetic(kinematic turbulent) Viscosity( T [K] ) , [ m2/sec ]
-	pub fn kinetic_viscosity(&self, h: u32) -> f64 {
+	pub fn kinetic_viscosity(&self, h: f64) -> f64 {
 		self.viscosity(h) / self.density(h)
 	}
 }
