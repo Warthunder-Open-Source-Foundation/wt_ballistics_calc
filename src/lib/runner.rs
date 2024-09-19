@@ -7,7 +7,7 @@ use simple_si_units::mechanical::{Acceleration, Force, Velocity};
 use wt_datamine_extractor_lib::missile::missile::Missile;
 
 use crate::launch_parameters::LaunchParameter;
-use crate::atmosphere::altitude_to_rho;
+use crate::atmosphere::{altitude_to_rho, ias_to_tas, Atmosphere};
 use crate::runner::EngineStage::{BurntOut, Running};
 
 const GRAVITY: f64 = 9.81;
@@ -79,10 +79,12 @@ pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep:
 	// State parameters
 	let mut drag_force: Force<f64>;
 	let mut a: Acceleration<f64>;
-	let mut velocity = launch_parameters.start_velocity;
+	//Equiv airspeed
+	let mut ias = launch_parameters.start_velocity;
 	let mut distance = Distance::from_m(0.0);
 	let altitude = launch_parameters.altitude;
 	let mut launch_plane_distance = Distance::from_m(0.0);
+	let atmosphere = Atmosphere::default();
 
 	// IMPORTANT when changing altitude anywhere move this function too
 	let rho = altitude_to_rho(altitude);
@@ -91,7 +93,7 @@ pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep:
 
 	let gravity = Acceleration::from_mps2(GRAVITY * if launch_parameters.use_gravity { 1.0 } else { 0.0 });
 	let area = PI * (missile.caliber / 2.0).powi(2);
-	let launch_velocity = velocity;
+	let launch_velocity = ias;
 
 	// Target parameters
 	let target_velocity = launch_parameters.target_speed;
@@ -105,7 +107,7 @@ pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep:
 	let mut splash: Splash = Splash { splash: false, at: Distance::from_m(0.0)};
 
 	for i in 0..sim_len {
-		drag_force = Force::from_N(0.5 * rho * velocity.to_mps().powi(2) * missile.cxk * area);
+		drag_force = Force::from_N(0.5 * rho * ias.to_mps().powi(2) * missile.cxk * area);
 
 		// Current engine stage
 		let engine_stage: EngineStage;
@@ -156,12 +158,13 @@ pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep:
 		launch_plane_distance += Distance::from_m(launch_parameters.start_velocity.to_mps()) * timestep;
 
 
-		velocity += Velocity::from_mps(a.to_mps2()) * timestep;
-		distance += Distance::from_m(velocity.to_mps()) * timestep;
+		ias += Velocity::from_mps(a.to_mps2()) * timestep;
+		let tas = ias_to_tas(ias, &atmosphere, altitude);
+		distance += Distance::from_m(tas.to_mps()) * timestep;
 
 
-		if velocity > max_v {
-			max_v = velocity;
+		if ias > max_v {
+			max_v = ias;
 		}
 
 		if a > max_a {
@@ -177,7 +180,7 @@ pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep:
 		}
 
 		results.profile.a.push(a);
-		results.profile.v.push(velocity);
+		results.profile.v.push(ias);
 		results.profile.d.push(distance);
 
 		if debug {
@@ -186,7 +189,7 @@ pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep:
 					 distance.to_meters().round().to_string().pad_to_width(5),
 					 target_distance.to_meters().round().to_string().pad_to_width(4),
 					 a.to_mps2().round().to_string().pad_to_width(3),
-					 velocity.to_mps().round().to_string().pad_to_width(4),
+					 ias.to_mps().round().to_string().pad_to_width(4),
 					 drag_force.to_N().round().to_string().pad_to_width(5),
 					 rho.to_string()[..6].pad_to_width(4),
 					 mass.to_string()[..5].pad_to_width(5),

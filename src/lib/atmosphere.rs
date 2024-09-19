@@ -1,5 +1,6 @@
 use std::cmp::{Ordering};
 use simple_si_units::base::Distance;
+use simple_si_units::mechanical::Velocity;
 
 /// Implemented according to https://github.com/GaijinEntertainment/DagorEngine/blob/main/prog/gameLibs/gamePhys/props/atmosphere.cpp
 
@@ -7,6 +8,10 @@ use simple_si_units::base::Distance;
 // Public API with proper name
 pub fn altitude_to_rho(altitude: Distance<f64>) -> f64 {
 	Atmosphere::new(760.0, 18.0).density(altitude.to_meters())
+}
+
+pub fn ias_to_tas(ias: Velocity<f64>, atmosphere: &Atmosphere, altitude: Distance<f64>) -> Velocity<f64> {
+	ias * (STD_RO0 / atmosphere.density(altitude.to_meters())).sqrt()
 }
 
 #[cfg(test)]
@@ -24,6 +29,15 @@ mod tests {
 		[0,1,2,3,5,8,10,12,15,20].into_iter()
 			.map(|e|(e, altitude_to_rho(Distance::from_km(e as _))))
 			.for_each(|(a, e)|eprintln!("alt:{a}m {e:.3}"))
+	}
+
+	#[test]
+	fn test_atm() {
+		let eas = Velocity::from_kph(350.0);
+		let atm = Atmosphere::default();
+		let alt = Distance::from_m(6000.0);
+
+		println!("{}", ias_to_tas(eas,&atm, alt).to_kph());
 	}
 }
 
@@ -119,5 +133,11 @@ fn max(l: f64, r: f64) -> f64 {
 		l
 	} else {
 		r
+	}
+}
+
+impl Default for Atmosphere {
+	fn default() -> Self {
+		Self::new(760.0, 18.0)
 	}
 }
