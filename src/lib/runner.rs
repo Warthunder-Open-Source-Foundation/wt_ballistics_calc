@@ -76,9 +76,6 @@ pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep:
 		parameters: launch_parameters,
 	};
 
-
-	// let start = Instant::now();
-
 	// State parameters
 	let mut drag_force: Force<f64>;
 	let mut a: Acceleration<f64>;
@@ -109,7 +106,6 @@ pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep:
 
 	for i in 0..sim_len {
 		drag_force = Force::from_N(0.5 * rho * velocity.to_mps().powi(2) * missile.cxk * area);
-
 
 		// Current engine stage
 		let engine_stage: EngineStage;
@@ -202,21 +198,14 @@ pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep:
 			splash.splash = true;
 			splash.at = target_distance - launch_distance;
 		}
-
-		// if target_distance != 0.0 && target_distance < distance {
-		// 	println!("Splash at {}m! The target is {}m from the launch aircraft after {}s of flight time", target_distance, target_distance - launch_distance, i as f64 * timestep);
-		// 	break;
-		// }
 	}
 
 	if debug {
-		// println!("Simulation took: {:?}", start.elapsed());
 		println!("max velocity: {}m/s", max_v.to_mps().round());
 		println!("max distance reached: {}m", distance.to_meters().round());
-	}
-
-	if launch_parameters.target_speed != Velocity::from_mps(0.0) {
-		println!("min missile - target: {}m", closest.to_meters().round());
+		if launch_parameters.target_speed != Velocity::from_mps(0.0) {
+			println!("min missile - target: {}m", closest.to_meters().round());
+		}
 	}
 
 	results.distance_flown = distance;
@@ -228,18 +217,4 @@ pub fn generate(missile: &Missile, launch_parameters: LaunchParameter, timestep:
 
 
 	results
-
-	// LaunchResults {
-	// 	distance_flown: distance,
-	// 	distance_to_missile: launch_plane_distance,
-	// 	splash: splash,
-	// 	max_v,
-	// 	max_a,
-	// 	t_to_target: TimeToTarget {
-	// 		t_to_1km: 0.0,
-	// 		t_to_2km: 0.0,
-	// 		t_to_mach2: 0.0,
-	// 		t_to_mach3: 0.0
-	// 	}
-	// }
 }
